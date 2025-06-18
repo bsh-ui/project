@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>음악 관리 (업로드 및 재생)</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #f8f9fa;
+		}
+
+		.container {
+			margin-top: 50px;
+			margin-bottom: 50px;
+		}
+
+		.card {
+			border: none;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			margin-bottom: 30px;
+		}
+
+		.card-header {
+			background-color: #007bff;
+			color: white;
+			font-size: 1.5rem;
+			font-weight: bold;
+			padding: 15px;
+		}
+
+		.music-item {
+			padding: 10px 0;
+			border-bottom: 1px dashed #eee;
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start; /* 상단 정렬 */
+			flex-wrap: wrap;
+		}
+
+		.music-item:last-child {
+			border-bottom: none;
+		}
+
+		.music-info {
+			flex-grow: 1;
+			margin-right: 15px;
+			min-width: 250px;
+		}
+
+		.music-info strong {
+			display: block;
+			font-size: 1.1em;
+		}
+
+		.music-info small {
+			color: #666;
+		}
+
+		.music-actions {
+			display: flex;
+			align-items: center;
+			margin-top: 5px;
+		}
+
+		audio {
+			width: 200px;
+			height: 40px;
+			margin-right: 5px;
+		}
+
+		.btn-sm {
+			margin-left: 5px;
+		}
+
+		.main-nav {
+			margin-bottom: 20px;
+			text-align: right;
+		}
+
+		/* 수정 모드 input/textarea 스타일 */
+		.music-item.editing input[type="text"],
+		.music-item.editing textarea {
+			width: calc(100% - 10px);
+			margin-bottom: 5px;
+			padding: 5px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		.lyrics-section {
+			margin-top: 10px;
+			width: 100%; /* 가사 영역이 전체 너비 사용 */
+		}
+
+		.music-lyrics-content {
+			white-space: pre-wrap; /* 가사 원본 서식 유지 */
+			background-color: #f0f0f0;
+			padding: 10px;
+			border-radius: 5px;
+			max-height: 200px; /* 너무 길면 스크롤바 */
+			overflow-y: auto;
+			font-size: 0.9em;
+			color: #333;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="main-nav">
+			<a href="/main" class="btn btn-info">메인으로</a>
+		</div>
+		<h2 class="mb-4 text-center">음악 관리 (업로드 & 재생)</h2>
+
+		<div class="card">
+			<div class="card-header">새로운 음악 업로드</div>
+			<div class="card-body">
+				<form id="music-upload-form">
+					<div class="mb-3">
+						<label for="title" class="form-label">제목</label>
+						<input type="text" class="form-control" id="title" required>
+					</div>
+					<div class="mb-3">
+						<label for="artist" class="form-label">아티스트</label>
+						<input type="text" class="form-control" id="artist" required>
+					</div>
+					<div class="mb-3">
+						<label for="album" class="form-label">앨범 (선택 사항)</label>
+						<input type="text" class="form-control" id="album">
+					</div>
+					<div class="mb-3">
+						<label for="lyrics" class="form-label">가사 (선택 사항)</label>
+						<textarea class="form-control" id="lyrics" rows="5" placeholder="가사를 입력하세요."></textarea>
+					</div>
+					<div class="mb-3">
+						<label for="musicFile" class="form-label">음악 파일 (.mp3, .wav 등)</label>
+						<input type="file" class="form-control" id="musicFile" accept="audio/*" required>
+					</div>
+					<div class="mb-3">
+						<label for="coverImageFile" class="form-label">커버 이미지 (선택 사항)</label>
+						<input type="file" class="form-control" id="coverImageFile" accept="image/*">
+					</div>
+					<button type="submit" class="btn btn-primary">업로드</button>
+					<button type="button" class="btn btn-secondary" id="reset-upload-form">초기화</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card-header">업로드된 음악 목록</div>
+			<div class="card-body" id="music-list-container">
+				<p class="text-center text-muted" id="loading-message">음악을 불러오는 중...</p>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script>
+		const API_BASE_URL = '/api/music';
+		let currentPage = 0; // 페이지네이션 (추후 구현)
+		const pageSize = 10; // 한 페이지에 표시할 음악 수
+
+		// ⭐ 중요: JWT 토큰과 음악 데이터를 저장할 전역 변수 ⭐
+		let jwtToken = '';
+		let allMusicData = {}; // 음악 ID를 키로 하여 각 음악 데이터를 저장할 객체
+
+
+		// JWT 토큰을 쿠키에서 가져오는 함수 (main.html과 동일)
+		function getCookie(name) {
+			const nameEQ = name + "=";
+			const ca = document.cookie.split(';');
+			for(let i=0; i < ca.length; i++) {
+				let c = ca[i];
+				while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+				if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+			}
+			return null;
+		}
+
+		// 폼 초기화 함수
+		function resetUploadForm() {
+			document.getElementById('music-upload-form').reset();
+		}
+
+		
+		// 음악 목록 불러오기 및 UI 갱신
+		async function fetchMusicList() {
+			const listContainer = document.getElementById('music-list-container');
+			const loadingMessage = document.getElementById('loading-message');
+			loadingMessage.style.display = 'block'; // 로딩 메시지 표시
+			listContainer.innerHTML = ''; // 기존 목록 초기화 (로딩 메시지 제외)
+            allMusicData = {}; // ⭐ 중요: 새로운 목록 로드 전에 데이터 초기화 ⭐
+
+            const headers = {};
+            if (jwtToken) {
+                headers['Authorization'] = `Bearer ${jwtToken}`;
+            }
+
+			try {
+				const response = await fetch(`${API_BASE_URL}?page=${currentPage}&size=${pageSize}&sort=uploadDate,desc`, { headers: headers });
+				if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        alert('음악 목록을 볼 권한이 없습니다. 관리자 계정으로 로그인해주세요.');
+                        window.location.href = '/custom_login'; // 로그인 페이지로 리디렉션
+                        return; // 중요: 함수 실행 중단
+                    }
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				const pageData = await response.json();
+				const musicList = pageData.content;
+
+				if (musicList && musicList.length > 0) {
+					musicList.forEach(music => {
+                        // ⭐ 중요: 음악 데이터를 전역 변수에 저장 ⭐
+                        allMusicData[music.id] = music; 
+
+						const musicItem = document.createElement('div');
+						musicItem.className = 'music-item';
+						musicItem.dataset.musicId = music.id; // data-music-id 속성 추가 (수정/삭제용)
+						musicItem.innerHTML = `
+                            <div class="music-info">
+                                <strong class="music-title">${music.title}</strong>
+                                <small class="music-artist">아티스트: ${Array.isArray(music.artist) ? music.artist.join(', ') : music.artist}</small>
+                                <small class="music-album">앨범: ${music.album ? music.album : 'N/A'}</small>
+                                <small class="text-muted"> | 업로드: ${new Date(music.uploadDate).toLocaleString()}
+									${music.duration ? ' | 재생 시간: ' + formatDuration(music.duration) : ''}
+								</small>
+                                <div class="lyrics-section">
+                                    <button class="btn btn-sm btn-outline-info view-lyrics-btn" data-bs-toggle="collapse" data-bs-target="#lyrics-${music.id}" aria-expanded="false" aria-controls="lyrics-${music.id}">
+                                        가사 ${music.lyrics ? '보기' : '없음'}
+                                    </button>
+                                    <pre id="lyrics-${music.id}" class="music-lyrics-content collapse mt-2">${music.lyrics ? music.lyrics : '가사 정보가 없습니다.'}</pre>
+                                </div>
+                            </div>
+                            <div class="music-actions">
+                                ${music.coverImagePath ? `<img src="/api/files/cover-image/${music.coverImagePath.split('/').pop()}" alt="앨범 커버" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-right: 10px;">` : ''}
+                                <audio id="audio-${music.id}" controls preload="none">
+                                    <source src="${API_BASE_URL}/stream/${music.id}" type="audio/mpeg">
+                                    <source src="${API_BASE_URL}/stream/${music.id}" type="audio/wav">
+                                    Your browser does not support the audio element.
+                                </audio>
+                                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="playMusic(${music.id}, '${music.title}')">재생</button>
+                                <button class="btn btn-sm btn-info ms-2 edit-btn" onclick="editMusic(${music.id}, this)">수정</button>
+                                <button class="btn btn-sm btn-danger ms-2 delete-btn" onclick="deleteMusic(${music.id}, '${music.title}')">삭제</button>
+                            </div>
+                        `;
+						listContainer.appendChild(musicItem);
+					});
+				} else {
+					listContainer.innerHTML = '<p class="text-center text-muted">등록된 음악이 없습니다. 첫 번째 음악을 업로드해주세요!</p>';
+				}
+			} catch (error) {
+				console.error('음악 목록을 불러오는 데 실패했습니다:', error);
+				listContainer.innerHTML = '<p class="text-danger text-center">음악 목록을 불러오는 데 실패했습니다.</p>';
+			} finally {
+				loadingMessage.style.display = 'none'; // 로딩 메시지 숨김
+			}
+		}
+
+		// 음악 업로드 폼 제출 처리
+		document.getElementById('music-upload-form').addEventListener('submit', async function (event) {
+			event.preventDefault();
+
+			const title = document.getElementById('title').value;
+			const artist = document.getElementById('artist').value;
+			const album = document.getElementById('album').value;
+			const lyrics = document.getElementById('lyrics').value; // 가사 내용
+			const musicFile = document.getElementById('musicFile').files[0];
+			const coverImageFile = document.getElementById('coverImageFile').files[0]; // 커버 이미지 파일
+
+			if (!musicFile) {
+				alert('음악 파일을 선택해주세요.');
+				return;
+			}
+
+			const formData = new FormData();
+			formData.append('title', title);
+			formData.append('artist', artist); // 아티스트는 단일 문자열로 보내고, 서버에서 List<String>으로 변환한다고 가정 (혹은 서버도 단일 String으로 변경)
+			formData.append('album', album);
+			formData.append('lyricsContent', lyrics); // 가사 추가
+			formData.append('file', musicFile); 
+			if (coverImageFile) {
+				formData.append('coverImageFile', coverImageFile); 
+			}
+
+            const headers = {};
+            if (jwtToken) {
+                headers['Authorization'] = `Bearer ${jwtToken}`;
+            }
+            // FormData를 사용할 때는 Content-Type을 수동으로 설정하지 않습니다.
+            // 브라우저가 boundary를 포함한 multipart/form-data 헤더를 자동으로 설정합니다.
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/upload`, {
+					method: 'POST',
+					body: formData,
+                    headers: headers // 인증 헤더 추가
+				});
+
+				if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        alert('음악을 업로드할 권한이 없습니다. 관리자 계정으로 로그인해주세요.');
+                        window.location.href = '/custom_login';
+                        return;
+                    }
+					const errorText = await response.text();
+					throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+				}
+
+				const result = await response.json();
+				alert('음악이 성공적으로 업로드되었습니다: ' + result.title);
+				resetUploadForm(); // 폼 초기화
+				fetchMusicList(); // ⭐ 업로드 후 목록 새로고침 ⭐
+
+			} catch (error) {
+				console.error('음악 업로드 실패:', error);
+				alert('음악 업로드에 실패했습니다: ' + error.message);
+			}
+		});
+
+		// 재생 버튼 클릭 시
+		function playMusic(musicId, title) {
+			const audioPlayer = document.querySelector(`#audio-${musicId}`);
+			if (audioPlayer) {
+				audioPlayer.play();
+				console.log(`${title} 재생 시작`);
+				// TODO: 재생 횟수 증가 API 호출 (백엔드 구현 후)
+			} else {
+				alert('플레이어를 찾을 수 없습니다.');
+			}
+		}
+
+		// 삭제 함수
+		async function deleteMusic(musicId, title) {
+			if (!confirm(`정말로 "${title}" 음악을 삭제하시겠습니까?`)) {
+				return;
+			}
+
+            const headers = {};
+            if (jwtToken) {
+                headers['Authorization'] = `Bearer ${jwtToken}`;
+            }
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/${musicId}`, {
+					method: 'DELETE',
+                    headers: headers // 인증 헤더 추가
+				});
+
+				if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        alert('음악을 삭제할 권한이 없습니다. 관리자 계정으로 로그인해주세요.');
+                        window.location.href = '/custom_login';
+                        return;
+                    }
+					const errorText = await response.text();
+					throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+				}
+
+				alert(`"${title}" 음악이 성공적으로 삭제되었습니다.`);
+				fetchMusicList(); // ⭐ 삭제 후 목록 새로고침 ⭐
+
+			} catch (error) {
+				console.error('음악 삭제 실패:', error);
+				alert('음악 삭제에 실패했습니다: ' + error.message);
+			}
+		}
+
+		// 수정 함수 (수정 모드 진입)
+		function editMusic(musicId, buttonElement) {
+			const musicItem = buttonElement.closest('.music-item');
+			const titleElement = musicItem.querySelector('.music-title');
+			const artistElement = musicItem.querySelector('.music-artist');
+			const albumElement = musicItem.querySelector('.music-album');
+			const lyricsSection = musicItem.querySelector('.lyrics-section'); 
+			const musicLyricsContent = musicItem.querySelector('.music-lyrics-content'); 
+
+			const currentMusic = allMusicData[musicId]; // ⭐ 중요: 원본 데이터에서 가져옵니다. ⭐
+			if (!currentMusic) {
+				console.error('수정할 음악의 원본 데이터를 찾을 수 없습니다.', musicId);
+				alert('수정할 음악 데이터를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+				return;
+			}
+
+			// 현재 텍스트 값 저장 (아티스트는 배열일 경우 쉼표로 조인)
+			const currentTitle = currentMusic.title;
+			const currentArtist = Array.isArray(currentMusic.artist) ? currentMusic.artist.join(', ') : currentMusic.artist;
+			const currentAlbum = currentMusic.album ? currentMusic.album : ''; // null이면 빈 문자열
+			const currentLyrics = currentMusic.lyrics ? currentMusic.lyrics : '';
+
+
+			// 입력 필드로 변경
+			titleElement.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentTitle}">`;
+			artistElement.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentArtist}">`;
+			albumElement.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentAlbum}">`;
+			lyricsSection.innerHTML = `
+                <label class="form-label mt-2">가사</label>
+                <textarea class="form-control form-control-sm edit-lyrics" rows="5" placeholder="가사를 입력하세요.">${currentLyrics}</textarea>
+            `;
+            
+			// 버튼 변경 (수정 -> 저장/취소)
+			const actionsDiv = musicItem.querySelector('.music-actions');
+			const audioHtml = actionsDiv.querySelector('audio') ? actionsDiv.querySelector('audio').outerHTML : '';
+			const playBtnHtml = actionsDiv.querySelector('.btn-outline-secondary') ? actionsDiv.querySelector('.btn-outline-secondary').outerHTML : '';
+			const coverImageHtml = actionsDiv.querySelector('img') ? actionsDiv.querySelector('img').outerHTML : ''; 
+
+			actionsDiv.innerHTML = `
+				${coverImageHtml}
+				${audioHtml}
+				${playBtnHtml}
+				<button class="btn btn-sm btn-success ms-2 save-btn" onclick="saveEditedMusic(${musicId}, this)">저장</button>
+				<button class="btn btn-sm btn-secondary ms-2 cancel-btn" onclick="cancelEdit(${musicId}, this)">취소</button>
+			`;
+
+			musicItem.classList.add('editing'); // 수정 모드임을 나타내는 클래스 추가 (CSS 스타일링용)
+		}
+
+		// 수정 내용 저장 함수
+		async function saveEditedMusic(musicId, buttonElement) {
+			const musicItem = buttonElement.closest('.music-item');
+			const newTitle = musicItem.querySelector('.music-title input').value;
+			const newArtistString = musicItem.querySelector('.music-artist input').value; 
+			const newAlbum = musicItem.querySelector('.music-album input').value;
+			const newLyrics = musicItem.querySelector('.edit-lyrics') ? musicItem.querySelector('.edit-lyrics').value : '';
+
+			const originalMusic = allMusicData[musicId]; 
+			if (!originalMusic) {
+			    alert('수정할 음악 데이터를 찾을 수 없습니다. 페이지를 새로고침해주세요.'); 
+			    return;
+			}
+			if (!newTitle.trim() || !newArtistString.trim()) { 
+				alert('제목과 아티스트는 필수 입력 항목입니다.');
+				return;
+			}
+
+            // ⭐ 중요: 아티스트 문자열을 배열로 변환 (서버 MusicDTO가 List<String> artist를 예상할 경우) ⭐
+            // 서버 MusicDTO의 artist 타입이 String[] 또는 List<String> 이라면 이 변환이 필요합니다.
+            // 만약 서버 MusicDTO의 artist 타입이 단일 String이라면 아래 라인을 주석 처리하고
+            // artist: newArtistString 로 변경해야 합니다.
+            const newArtistArray = newArtistString.split(',').map(item => item.trim()).filter(item => item !== '');
+
+
+            // ⭐ originalMusic의 모든 필드를 포함하도록 updatedMusic 객체 수정 ⭐
+			const updatedMusic = {
+                id: originalMusic.id, // 필수: ID 포함
+				title: newTitle,
+				artist: newArtistArray, // ⭐ 중요: 배열로 변환된 아티스트 사용 ⭐
+				album: newAlbum,
+				lyrics: newLyrics, // 가사 내용 추가
+                filePath: originalMusic.filePath, // 기존 파일 경로 유지
+                coverImagePath: originalMusic.coverImagePath, // 기존 커버 이미지 경로 유지
+                duration: originalMusic.duration, // 기존 재생 시간 유지
+                playCount: originalMusic.playCount, // 기존 재생 횟수 유지
+                uploaderId: originalMusic.uploaderId, // 기존 업로더 ID 유지
+                uploaderNickname: originalMusic.uploaderNickname, // 기존 업로더 닉네임 유지
+                uploadDate: originalMusic.uploadDate // 기존 업로드 날짜 유지
+				// TODO: MusicDTO에 다른 필드가 있다면 여기에 추가하여 서버에 보냅니다.
+			};
+
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (jwtToken) { // JWT 토큰이 있다면 헤더에 추가
+                headers['Authorization'] = `Bearer ${jwtToken}`;
+            }
+
+			try {
+				const response = await fetch(`${API_BASE_URL}/${musicId}`, {
+					method: 'PUT',
+					headers: headers, 
+					body: JSON.stringify(updatedMusic)
+				});
+
+				if (!response.ok) {
+                    let errorData = await response.text(); 
+                    try {
+                        errorData = JSON.parse(errorData); 
+                    } catch (e) {
+                        console.warn('Error response was not JSON:', errorData);
+                    }
+                    console.error('서버 응답 오류 데이터:', errorData);
+
+                    if (response.status === 401 || response.status === 403) {
+                        alert('음악을 수정할 권한이 없습니다. 관리자 계정으로 로그인해주세요.');
+                        window.location.href = '/custom_login'; 
+                        return; 
+                    }
+
+					throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || response.statusText || errorData}`);
+				}
+
+				alert('음악 정보가 성공적으로 수정되었습니다.');
+				console.log('fetchMusicList 호출됨');
+				fetchMusicList(); // ⭐ 수정 완료 후 목록 새로고침 ⭐
+				console.log('fetchMusicList 호출 완료');
+
+			} catch (error) {
+				console.error('음악 정보 수정 실패:', error);
+				alert('음악 정보 수정에 실패했습니다: ' + error.message);
+			}
+		}
+
+		// ⭐ 수정 취소 함수 (더 확실하게 UI 초기화) ⭐
+		async function cancelEdit(musicId, buttonElement) {
+			// 단순히 목록을 새로고침하여 이전 상태로 되돌립니다.
+			// 이전에 'editing' 클래스가 제거되지 않았거나, UI 갱신이 불완전했을 가능성 때문에
+			// fetchMusicList()가 가장 확실한 방법입니다.
+			console.log('fetchMusicList 호출됨');
+
+			fetchMusicList(); 
+			console.log('fetchMusicList 호출 완료');
+
+		}
+
+		// 초기화 버튼 이벤트 리스너
+		document.getElementById('reset-upload-form').addEventListener('click', resetUploadForm);
+
+		// 페이지 로드 시 음악 목록 불러오기
+		document.addEventListener('DOMContentLoaded', () => {
+            // ⭐ 페이지 로드 시 JWT 토큰 가져오기 ⭐
+            const storedToken = getCookie('jwt_token');
+            if (storedToken) {
+                jwtToken = storedToken;
+                console.log('[music_admin_upload] JWT 토큰을 쿠키에서 성공적으로 가져왔습니다.');
+            } else {
+                console.warn('[music_admin_upload] JWT 토큰이 쿠키에 없습니다. 관리자 기능 사용에 제한이 있을 수 있습니다.');
+                // 관리자 페이지이므로 토큰이 없으면 로그인 페이지로 리디렉션할 수도 있습니다.
+                // alert('로그인이 필요합니다. 관리자 계정으로 로그인해주세요.');
+                // window.location.href = '/custom_login';
+            }
+            fetchMusicList();
+        });
+
+		function formatDuration(seconds) {
+			if (seconds === null || seconds === undefined || seconds < 0) {
+				return "0:00";
+			}
+			const minutes = Math.floor(seconds / 60);
+			const remainingSeconds = seconds % 60;
+			const formattedSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+			return `${minutes}:${formattedSeconds}`;
+		}
+	</script>
+</body>
+
+</html>

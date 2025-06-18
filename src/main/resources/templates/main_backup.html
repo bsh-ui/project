@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>메인 페이지</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/css/main_style.css">
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			/* margin: 50px; 제거하고 패딩이나 컨테이너 마진으로 조정 - 이전 수정사항 반영 */
+			text-align: center;
+			background-color: #f8f9fa;
+			/* 배경색 설정 - 이전 수정사항 반영 */
+		}
+
+		.container {
+			/* border: 1px solid #ccc; 제거 - 이전 수정사항 반영 */
+			padding: 30px;
+			border-radius: 8px;
+			/* display: inline-block; 제거하고 max-width 및 margin auto 사용 - 이전 수정사항 반영 */
+			max-width: 960px;
+			/* 최대 너비 설정 - 이전 수정사항 반영 */
+			margin: 50px auto;
+			/* 중앙 정렬 및 상하 마진 - 이전 수정사항 반영 */
+			background-color: #ffffff;
+			/* 컨테이너 배경색 - 이전 수정사항 반영 */
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+			/* 그림자 효과 - 이전 수정사항 반영 */
+		}
+
+		h1 {
+			color: #333;
+		}
+
+		p {
+			color: #666;
+		}
+
+		a {
+			text-decoration: none;
+			color: #007bff;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		.user-info {
+			margin-top: 20px;
+			padding: 15px;
+			background-color: #f0f8ff;
+			border-radius: 5px;
+			text-align: left;
+			/* 텍스트 왼쪽 정렬 - 이전 수정사항 반영 */
+		}
+
+			</style>
+</head>
+
+<body>
+	<header class="main-header">
+		<div class="header-content">
+			<div class="logo">
+				<!--<img src="/images/your_logo.png" alt="내 로고">-->
+			</div>
+			<div class="search-bar">
+				<input type="text" placeholder="여름 밤을 담은 감성 시티팝 🎶･*:.｡.☆彡"> <button type="button"
+					class="search-button">검색</button>
+			</div>
+		</div>
+		<nav class="main-nav">
+			<ul>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownChart" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						차트100
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownChart">
+						<li><a class="dropdown-item" href="#">일간 차트</a></li>
+						<li><a class="dropdown-item" href="#">주간 차트</a></li>
+						<li><a class="dropdown-item" href="#">월간 차트</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownNewMusic" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						최신음악
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownNewMusic">
+						<li><a class="dropdown-item" href="#">최신 곡</a></li>
+						<li><a class="dropdown-item" href="#">최신 앨범</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownGenre" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						장르음악
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownGenre">
+						<li><a class="dropdown-item" href="#">발라드</a></li>
+						<li><a class="dropdown-item" href="#">댄스</a></li>
+						<li><a class="dropdown-item" href="#">힙합</a></li>
+						<li><a class="dropdown-item" href="#">록</a></li>
+						<li><a class="dropdown-item" href="#">재즈</a></li>
+						<li><a class="dropdown-item" href="#">POP</a></li>
+						<li><a class="dropdown-item" href="#">R&B</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownNotice" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						공지사항
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownNotice">
+						<li><a class="dropdown-item" href="/notice_list">일반 공지</a></li>
+						<li><a class="dropdown-item" href="#">업데이트 소식</a></li>
+						<li><a class="dropdown-item" href="#">이벤트</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRecommend" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						추천
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownRecommend">
+						<li><a class="dropdown-item" href="#">맞춤 추천</a></li>
+						<li><a class="dropdown-item" href="#">에디터 추천</a></li>
+						<li><a class="dropdown-item" href="#">인기 플레이리스트</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownFreeboard" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						자유게시판
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownFreeboard">
+						<li><a class="dropdown-item" href="#">인기 글</a></li>
+						<li><a class="dropdown-item" href="#">새 글 작성</a></li>
+						<li><a class="dropdown-item" href="#">내 글 보기</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMusicHug" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						뮤직허그
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownMusicHug">
+						<li><a class="dropdown-item" href="#">실시간 듣기</a></li>
+						<li><a class="dropdown-item" href="#">친구 초대</a></li>
+						<li><a class="dropdown-item" href="#">내 허그룸</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+	</header>
+	<div class="container">
+		<h1>환영합니다!</h1>
+
+		<p>이곳은 메인 페이지입니다. 성공적으로 로그인되었습니다.</p>
+
+		<div th:if="${session.user != null}" class="user-info">
+			<h3>사용자 정보:</h3>
+			<p><strong>이름:</strong> <span th:text="${session.user.username}"></span></p>
+			<p><strong>이메일:</strong> <span th:text="${session.user.email}"></span></p>
+			<p><strong>닉네임:</strong> <span th:text="${session.user.nickname}"></span></p>
+		</div>
+		<div th:unless="${session.user != null}" class="user-info">
+			<p>사용자 정보를 불러올 수 없습니다.</p>
+		</div>
+
+		<p><a th:href="@{/log_out}">로그아웃</a></p>
+		<div class="mt-4">
+		          <div th:replace="~{music_list :: musicListContent}"></div>
+		      </div>
+
+	</div>
+	<div class="signup-link">
+		<p>이미 계정이 있으신가요? <a href="/custom_login">로그인</a></p>
+		<p>계정이 없으신가요? <a href="/signup">회원가입</a></p>
+	</div>
+	<div>
+		<p><a href="/mypage">마이페이지</a></p>
+	</div>
+	
+	<div th:if="${session.user != null and session.user.roles.contains('ROLE_ADMIN')}">
+		<a href="/music_upload">업로드 페이지</a>
+	</div>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

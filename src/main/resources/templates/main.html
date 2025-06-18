@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>메인 페이지</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/css/main_style.css">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+		rel="stylesheet">
+	
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script>
+	    const API_BASE_URL = 'http://localhost:8485/api/music'; // 백엔드 API 기본 URL
+	    let currentPage = 0; // 현재 페이지 (0부터 시작)
+	    let totalPages = 0; // 총 페이지 수
+	    let currentKeyword = ''; // 현재 검색 키워드
+	    let jwtToken = ''; // 쿠키에서 가져올 JWT 토큰
+	    const pageSize = 12; // music_list에 사용되는 한 페이지 음악 개수
+
+	    // JWT 토큰을 쿠키에서 가져오는 함수
+	    function getCookie(name) {
+	        console.log(`[getCookie] Attempting to get cookie: ${name}`);
+	        console.log(`[getCookie] document.cookie current value: '${document.cookie}'`);
+
+	        const nameEQ = name + "=";
+	        const ca = document.cookie.split(';');
+	        for(let i=0; i < ca.length; i++) {
+	            let c = ca[i];
+	            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+	            if (c.indexOf(nameEQ) === 0) {
+	                const foundValue = c.substring(nameEQ.length, c.length);
+	                console.log(`[getCookie] Found cookie '${name}' with value: ${foundValue.substring(0, 30)}...`); // 값의 일부만 로깅
+	                return foundValue;
+	            }
+	        }
+	        console.log(`[getCookie] Cookie '${name}' not found.`);
+	        return null;
+	    }
+
+	    // duration (초)를 "분:초" 형식으로 변환하는 헬퍼 함수
+	    function formatDuration(seconds) {
+	        const minutes = Math.floor(seconds / 60);
+	        const remainingSeconds = Math.floor(seconds % 60);
+	        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+	    }
+
+	    // 페이지 로드 시 쿠키에서 토큰 불러오기 및 초기 음악 목록 로드
+	    document.addEventListener('DOMContentLoaded', () => {
+	        console.log('[DOMContentLoaded] Page loaded. Attempting to get JWT token.');
+	        const storedToken = getCookie('jwt_token');
+	        if (storedToken) {
+	            jwtToken = storedToken;
+	            console.log('JWT 토큰을 쿠키에서 성공적으로 가져왔습니다. 값의 길이:', jwtToken.length);
+	            console.log('JWT 토큰 값 (처음 30자):', jwtToken.substring(0, 30) + '...');
+	        } else {
+	            console.warn('JWT 토큰이 쿠키에 없습니다. 검색 기능 및 인증된 기능에 문제가 발생할 수 있습니다.');
+	        }
+	        
+	        fetchPublicMusicList(); 
+	        initializePlaylistModal(); 
+	    });
+
+	    // 음악 검색 함수 (main.html의 검색 바용)
+	    async function searchMusic(page = 0) {
+	        currentKeyword = document.getElementById('keywordInput').value;
+	        currentPage = page;
+
+	        if (!currentKeyword) {
+	            alert('검색어를 입력하세요.');
+	            return;
+	        }
+
+	        const url = `${API_BASE_URL}/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=10&sort=uploadDate,desc`;
+
+	        try {
+	            const headers = {
+	                'Content-Type': 'application/json'
+	            };
+	            if (jwtToken) {
+	                headers['Authorization'] = `Bearer ${jwtToken}`; // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
+	                console.log('[searchMusic] Authorization header added with JWT token. Token length:', jwtToken.length);
+	            } else {
+	                console.warn('[searchMusic] No JWT token available for search request. It might be absent or expired.');
+	            }
+
+	            const response = await fetch(url, { headers: headers, credentials: 'include' }); // ⭐ credentials: 'include' 추가
+
+	            if (!response.ok) {
+	                if (response.status === 401 || response.status === 403) {
+	                     document.getElementById('resultsContainer').innerHTML = `<p style="color: red;">검색 권한이 없거나 로그인 만료입니다. 로그인 후 다시 시도해주세요.</p>`;
+	                     console.error('[searchMusic] Search failed: Unauthorized or Forbidden. Status:', response.status);
+	                }
+	                const errorText = await response.text();
+	                throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+	            }
+
+	            const data = await response.json();
+	            displayResults(data);
+	        } catch (error) {
+	            console.error('검색 중 오류 발생:', error);
+	            document.getElementById('resultsContainer').innerHTML = `<p style="color: red;">검색 중 오류가 발생했습니다: ${error.message}</p>`;
+	        }
+	    }
+
+	    // 검색 결과 표시 함수 (main.html의 검색 바용)
+	    function displayResults(data) {
+	        const resultsContainer = document.getElementById('resultsContainer');
+	        resultsContainer.innerHTML = ''; // 기존 결과 지우기
+
+	        if (data.content && data.content.length > 0) {
+	            data.content.forEach(music => {
+	                const musicItem = document.createElement('div');
+	                musicItem.classList.add('music-item');
+	                musicItem.innerHTML = `
+	                    <h3>${music.title}</h3>
+	                    <p><strong>아티스트:</strong> ${music.artist}</p>
+	                    <p><strong>앨범:</strong> ${music.album || '정보 없음'}</p>
+	                    <p><strong>업로드 날짜:</strong> ${new Date(music.uploadDate).toLocaleString()}</p>
+	                    <p><strong>재생 시간:</strong> ${formatDuration(music.duration)}</p>
+	                    <button onclick="togglePlayPause(event, '${music.id}', this)">재생</button> `;
+	                resultsContainer.appendChild(musicItem);
+	            });
+	        } else {
+	            resultsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+	        }
+
+	        // 페이지네이션 정보 업데이트
+	        currentPage = data.pageable.pageNumber;
+	        totalPages = data.totalPages;
+	        document.getElementById('currentPageInfo').textContent = `페이지 ${currentPage + 1} / ${totalPages}`;
+
+	        document.getElementById('prevPageBtn').disabled = data.first;
+	        document.getElementById('nextPageBtn').disabled = data.last;
+	    }
+
+	    // 페이지 변경 함수 (main.html의 검색 바용)
+	    function changePage(delta) {
+	        searchMusic(currentPage + delta);
+	    }
+
+	    // music_list.html에서 가져온 음악 스트리밍 함수
+	    let currentPlayingAudio = null;
+	    let currentPlayingButton = null;
+
+	    async function checkLoginStatus() {
+	        try {
+	            const headers = {};
+	            if (jwtToken) { // JWT 토큰이 있다면 추가
+	                headers['Authorization'] = `Bearer ${jwtToken}`; // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
+	                console.log('[checkLoginStatus] Authorization header added. Token length:', jwtToken.length);
+	            } else {
+	                console.warn('[checkLoginStatus] No JWT token available for /api/user/me. Attempting with credentials:include.');
+	            }
+	            console.log('Headers sent for /api/user/me:', headers);
+
+	            const response = await fetch('/api/user/me', {
+	                method: 'GET',
+	                headers: headers,
+	                credentials: 'include',
+	                redirect: 'follow'
+	            });
+
+	            console.log('[checkLoginStatus] Response status for /api/user/me:', response.status);
+
+	            if (response.status === 401 || response.status === 403) {
+	                console.warn('[checkLoginStatus] User is not logged in or session expired. Status:', response.status);
+	                return false;
+	            }
+	            return response.ok;
+	        } catch (err) {
+	            console.error('로그인 상태 확인 중 오류 발생:', err);
+	            return false;
+	        }
+	    }
+
+	    async function togglePlayPause(event, musicId, buttonElement) {
+	        event.stopPropagation();
+	        console.log('[togglePlayPause] Music ID:', musicId, 'Button element:', buttonElement);
+	        const isLoggedIn = await checkLoginStatus();
+	        console.log('[togglePlayPause] Is user logged in?', isLoggedIn); // ⭐ 디버깅 로그 ⭐
+
+	        if (!isLoggedIn) {
+	            alert('스트리밍을 위해서는 로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+	            window.location.href = '/custom_login';
+	            return;
+	        }
+
+	        const audioPlayer = document.getElementById(`audio-${musicId}`);
+	        const iconElement = buttonElement.querySelector('i');
+
+	        if (audioPlayer && !audioPlayer.paused) {
+	            console.log('[togglePlayPause] Pausing current audio.');
+	            audioPlayer.pause();
+	            iconElement.className = 'bi bi-play-fill';
+	            buttonElement.textContent = ' 재생';
+	            buttonElement.prepend(iconElement);
+	            currentPlayingAudio = null;
+	            currentPlayingButton = null;
+	            return;
+	        }
+
+	        if (currentPlayingAudio && currentPlayingAudio !== audioPlayer) {
+	            console.log('[togglePlayPause] Pausing previously playing audio.');
+	            currentPlayingAudio.pause();
+	            if (currentPlayingButton) {
+	                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i> 재생';
+	            }
+	        }
+
+	        if (audioPlayer) {
+	            try {
+	                console.log(`[togglePlayPause] Attempting to play audio from: ${audioPlayer.src}`); // ⭐ 디버깅 로그 ⭐
+	                await audioPlayer.play();
+	                console.log('[togglePlayPause] Audio playback initiated successfully.');
+	                iconElement.className = 'bi bi-pause-fill';
+	                buttonElement.textContent = ' 일시정지';
+	                buttonElement.prepend(iconElement);
+	                currentPlayingAudio = audioPlayer;
+	                currentPlayingButton = buttonElement;
+	            } catch (error) {
+	                console.error('음악 재생 실패:', error);
+	                if (error.name === 'NotAllowedError') {
+	                    alert('음악 자동 재생이 차단되었습니다. 사용자 상호작용 후 다시 시도해주세요.');
+	                } else if (error.name === 'NotSupportedError') {
+	                    alert('지원되지 않는 오디오 형식입니다.');
+	                } else {
+	                    alert('음악 재생에 실패했습니다: ' + error.message);
+	                }
+	            }
+	        } else {
+	            console.error('[togglePlayPause] Audio player element not found for music ID:', musicId);
+	        }
+	    }
+	    
+	    // music_list.html에서 가져온 공개용 음악 목록을 불러오는 함수
+	    async function fetchPublicMusicList() {
+	        const listContainer = document.getElementById('public-music-list-container');
+	        let loadingMessage = document.getElementById('loading-message');
+
+	        if (loadingMessage) {
+	            loadingMessage.style.display = 'block';
+	        } else {
+	            loadingMessage = document.createElement('p');
+	            loadingMessage.id = 'loading-message';
+	            loadingMessage.className = 'text-center text-muted';
+	            loadingMessage.textContent = '음악을 불러오는 중...';
+	            document.querySelector('.card-body')?.prepend(loadingMessage); 
+	        }
+
+	        listContainer.innerHTML = '';
+
+	        try {
+	            const headers = {};
+	            if (jwtToken) { // JWT 토큰이 있다면 추가
+	                headers['Authorization'] = `Bearer ${jwtToken}`; // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
+	                console.log('[fetchPublicMusicList] Authorization header added with JWT token. Token length:', jwtToken.length);
+	            } else {
+	                console.warn('[fetchPublicMusicList] No JWT token available for public music list request. It might be absent or expired.');
+	            }
+
+	            const response = await fetch(`${API_BASE_URL}?page=${currentPage}&size=${pageSize}&sort=uploadDate,desc`, { headers: headers, credentials: 'include' }); // ⭐ credentials: 'include' 추가
+
+	            if (response.status === 401 || response.status === 403) {
+	                console.warn('음악 목록을 불러오는 데 실패했습니다: 인증 또는 권한 부족. 로그인 페이지로 이동합니다.');
+	                if (loadingMessage) loadingMessage.style.display = 'none';
+	                listContainer.innerHTML = '<p class="text-danger text-center">음악 목록을 보려면 로그인이 필요합니다.</p>';
+	                alert('음악 목록을 보려면 로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+	                window.location.href = '/custom_login';
+	                return;
+	            }
+
+	            if (!response.ok) {
+	                throw new Error(`HTTP error! status: ${response.status}`);
+	            }
+	            const pageData = await response.json();
+	            const musicList = pageData.content;
+
+	            if (musicList && musicList.length > 0) {
+	                loadingMessage.style.display = 'none';
+	                musicList.forEach(music => {
+	                    const coverFileName = music.coverImagePath
+	                                       ? music.coverImagePath.split('/').pop().split('\\').pop()
+	                                       : null;
+
+	                    const coverImageUrl = coverFileName
+	                                       ? `http://localhost:8485/api/files/cover-image/${coverFileName}`
+	                                       : '/images/default_album_cover.png';
+
+	                    const colDiv = document.createElement('div');
+	                    colDiv.className = 'col-md-3 col-sm-6';
+	                    colDiv.innerHTML = `
+	                        <div class="card music-card">
+	                            <a href="/music_detail?id=${music.id}" class="music-info-link">
+	                                <img 
+	                                    src="${coverImageUrl}" 
+	                                    class="card-img-top" 
+	                                    alt="앨범 커버"
+	                                    onerror="this.onerror=null;this.src='/images/default_album_cover.png';"> </a>
+
+	                            <div class="card-body music-card-body">
+	                                <a href="/music_detail?id=${music.id}" class="music-info-link">
+	                                    <h5 class="music-title">${music.title}</h5>
+	                                    <p class="music-artist">${Array.isArray(music.artist) ? music.artist.join(', ') : music.artist}</p>
+	                                    <p class="music-album">${music.album ? music.album : 'N/A'}</p>
+	                                    <small class="text-muted">
+	                                        ${music.duration ? '재생 시간: ' + formatDuration(music.duration) : ''}
+	                                    </small>
+	                                </a>
+
+	                                <div class="play-button-container">
+	                                    <audio id="audio-${music.id}" preload="none" style="display: none;">
+	                                        <source src="${API_BASE_URL}/stream/${music.id}" type="audio/mpeg">
+	                                        Your browser does not support the audio element.
+	                                    </audio>
+
+	                                    <button class="btn btn-dark" onclick="togglePlayPause(event, ${music.id}, this)">
+	                                        <i class="bi bi-play-fill"></i> 재생
+	                                    </button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    `;
+	                    listContainer.appendChild(colDiv);
+	                });
+	            } else {
+	                listContainer.innerHTML = '<p class="text-center text-muted">등록된 음악이 없습니다.</p>';
+	                loadingMessage.style.display = 'none';
+	            }
+	        } catch (error) {
+	            console.error('음악 목록을 불러오는 데 실패했습니다:', error);
+	            if (loadingMessage) loadingMessage.style.display = 'none';
+	            listContainer.innerHTML = '<p class="text-danger text-center">음악 목록을 불러오는 데 실패했습니다.</p>';
+	        }
+	    }
+
+	    // music_list.html에서 가져온 플레이리스트 모달 초기화 로직
+	    function initializePlaylistModal() {
+	        const createPlaylistForm = document.getElementById('createPlaylistForm');
+	        const createPlaylistModalElement = document.getElementById('createPlaylistModal');
+	        let createPlaylistModal = null;
+
+	        if (createPlaylistModalElement) {
+	            createPlaylistModal = new bootstrap.Modal(createPlaylistModalElement);
+	        } else {
+	            console.warn("경고: ID 'createPlaylistModal'을 가진 HTML 요소를 찾을 수 없습니다. 플레이리스트 모달이 작동하지 않을 수 있습니다.");
+	        }
+
+	        if (createPlaylistForm && createPlaylistModal) {
+	            createPlaylistForm.addEventListener('submit', async function(event) {
+	                event.preventDefault();
+
+	                const title = document.getElementById('playlistTitle').value;
+	                const description = document.getElementById('playlistDescription').value;
+
+	                if (!title.trim()) {
+	                    alert('플레이리스트 제목은 필수입니다.');
+	                    return;
+	                }
+
+	                try {
+	                    const response = await fetch('/api/playlists', {
+	                        method: 'POST',
+	                        headers: {
+	                            'Content-Type': 'application/json',
+	                            'Authorization': `Bearer ${jwtToken}` // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
+	                        },
+	                        credentials: 'include', // ⭐ credentials: 'include' 추가
+	                        body: JSON.stringify({ title, description })
+	                    });
+
+	                    if (response.ok) {
+	                        const newPlaylist = await response.json();
+	                        alert(`플레이리스트 '${newPlaylist.title}'이(가) 생성되었습니다.`);
+	                        createPlaylistModal.hide();
+	                        createPlaylistForm.reset();
+	                        window.location.reload();
+	                    } else if (response.status === 401) {
+	                        alert('플레이리스트 생성은 로그인이 필요합니다.');
+	                        window.location.href = '/custom_login';
+	                    } else if (response.status === 400) {
+	                        const errorData = await response.json();
+	                        alert('플레이리스트 생성 실패: ' + (errorData.message || '제목을 확인해주세요.'));
+	                    } else {
+	                        alert('플레이리스트 생성 중 오류가 발생했습니다.');
+	                        console.error('플레이리스트 생성 실패:', response.status, await response.text());
+	                    }
+	                } catch (error) {
+	                    console.error('플레이리스트 생성 요청 중 에러:', error);
+	                    alert('네트워크 오류 또는 서버 응답 문제 발생.');
+	                }
+	            });
+	        } else {
+	            console.warn("경고: 플레이리스트 생성 폼 또는 모달 요소가 없거나, Bootstrap 모달 객체를 초기화할 수 없습니다. 관련 기능이 작동하지 않을 수 있습니다.");
+	        }
+	    }
+	</script>
+	<!--<script>
+	    const API_BASE_URL = 'http://localhost:8485/api/music'; // 백엔드 API 기본 URL
+	    let currentPage = 0; // 현재 페이지 (0부터 시작)
+	    let totalPages = 0; // 총 페이지 수
+	    let currentKeyword = ''; // 현재 검색 키워드
+	    let jwtToken = ''; // 쿠키에서 가져올 JWT 토큰
+	    const pageSize = 12; // music_list에 사용되는 한 페이지 음악 개수
+
+	    // JWT 토큰을 쿠키에서 가져오는 함수
+	    function getCookie(name) {
+	        // ⭐ 디버깅용 로그 추가 시작 ⭐
+	        console.log(`[getCookie] Attempting to get cookie: ${name}`);
+	        console.log(`[getCookie] document.cookie current value: '${document.cookie}'`);
+	        // ⭐ 디버깅용 로그 추가 끝 ⭐
+
+	        const nameEQ = name + "=";
+	        const ca = document.cookie.split(';');
+	        for(let i=0; i < ca.length; i++) {
+	            let c = ca[i];
+	            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+	            if (c.indexOf(nameEQ) === 0) {
+	                const foundValue = c.substring(nameEQ.length, c.length);
+	                console.log(`[getCookie] Found cookie '${name}' with value: ${foundValue.substring(0, 30)}...`); // 값의 일부만 로깅
+	                return foundValue;
+	            }
+	        }
+	        console.log(`[getCookie] Cookie '${name}' not found.`);
+	        return null;
+	    }
+
+	    // duration (초)를 "분:초" 형식으로 변환하는 헬퍼 함수
+	    function formatDuration(seconds) {
+	        const minutes = Math.floor(seconds / 60);
+	        const remainingSeconds = Math.floor(seconds % 60);
+	        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+	    }
+
+	    // 페이지 로드 시 쿠키에서 토큰 불러오기 및 초기 음악 목록 로드
+	    document.addEventListener('DOMContentLoaded', () => {
+	        console.log('[DOMContentLoaded] Page loaded. Attempting to get JWT token.');
+	        const storedToken = getCookie('jwt_token');
+	        if (storedToken) {
+	            jwtToken = storedToken;
+	            console.log('JWT 토큰을 쿠키에서 성공적으로 가져왔습니다.');
+	        } else {
+	            console.warn('JWT 토큰이 쿠키에 없습니다. 검색 기능에 인증이 필요할 수 있습니다.');
+	        }
+	        
+	        // music_list.html에서 가져온 초기 음악 목록 로드 함수 호출
+	        fetchPublicMusicList(); 
+	        // music_list.html에서 가져온 플레이리스트 모달 초기화 함수 호출
+	        initializePlaylistModal(); 
+	    });
+
+	    // 음악 검색 함수 (main.html의 검색 바용)
+	    async function searchMusic(page = 0) {
+	        currentKeyword = document.getElementById('keywordInput').value;
+	        currentPage = page;
+
+	        if (!currentKeyword) {
+	            alert('검색어를 입력하세요.');
+	            return;
+	        }
+
+	        const url = `${API_BASE_URL}/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=10&sort=uploadDate,desc`;
+
+	        try {
+	            const headers = {
+	                'Content-Type': 'application/json'
+	            };
+	            if (jwtToken) {
+	                headers['Authorization'] = `Bearer ${jwtToken}`;
+	                console.log('[searchMusic] Authorization header added with JWT token.');
+	            } else {
+	                console.warn('[searchMusic] No JWT token available for search request.');
+	            }
+
+	            const response = await fetch(url, { headers: headers });
+
+	            if (!response.ok) {
+	                if (response.status === 401 || response.status === 403) {
+	                     document.getElementById('resultsContainer').innerHTML = `<p style="color: red;">검색 권한이 없거나 로그인 만료입니다. 로그인 후 다시 시도해주세요.</p>`;
+	                     console.error('[searchMusic] Search failed: Unauthorized or Forbidden. Status:', response.status);
+	                }
+	                const errorText = await response.text();
+	                throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+	            }
+
+	            const data = await response.json();
+	            displayResults(data);
+	        } catch (error) {
+	            console.error('검색 중 오류 발생:', error);
+	            document.getElementById('resultsContainer').innerHTML = `<p style="color: red;">검색 중 오류가 발생했습니다: ${error.message}</p>`;
+	        }
+	    }
+
+	    // 검색 결과 표시 함수 (main.html의 검색 바용)
+	    function displayResults(data) {
+	        const resultsContainer = document.getElementById('resultsContainer');
+	        resultsContainer.innerHTML = ''; // 기존 결과 지우기
+
+	        if (data.content && data.content.length > 0) {
+	            data.content.forEach(music => {
+	                const musicItem = document.createElement('div');
+	                musicItem.classList.add('music-item');
+	                musicItem.innerHTML = `
+	                    <h3>${music.title}</h3>
+	                    <p><strong>아티스트:</strong> ${music.artist}</p>
+	                    <p><strong>앨범:</strong> ${music.album || '정보 없음'}</p>
+	                    <p><strong>업로드 날짜:</strong> ${new Date(music.uploadDate).toLocaleString()}</p>
+	                    <p><strong>재생 시간:</strong> ${formatDuration(music.duration)}</p>
+	                    <button onclick="streamMusic(this, '${music.id}')">재생</button> `;
+	                resultsContainer.appendChild(musicItem);
+	            });
+	        } else {
+	            resultsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+	        }
+
+	        // 페이지네이션 정보 업데이트
+	        currentPage = data.pageable.pageNumber;
+	        totalPages = data.totalPages;
+	        document.getElementById('currentPageInfo').textContent = `페이지 ${currentPage + 1} / ${totalPages}`;
+
+	        document.getElementById('prevPageBtn').disabled = data.first;
+	        document.getElementById('nextPageBtn').disabled = data.last;
+	    }
+
+	    // 페이지 변경 함수 (main.html의 검색 바용)
+	    function changePage(delta) {
+	        searchMusic(currentPage + delta);
+	    }
+
+	    // music_list.html에서 가져온 음악 스트리밍 함수
+	    let currentPlayingAudio = null;
+	    let currentPlayingButton = null;
+	    async function checkLoginStatus() {
+	        try {
+	            // credentials: 'include'는 세션 쿠키를 자동으로 포함합니다.
+	            // HttpOnly JWT 토큰이 아닌 경우, 여기서 직접 Authorization 헤더를 추가할 수 있습니다.
+	            const headers = {};
+	            if (jwtToken) { // JWT 토큰이 있다면 추가
+	                headers['Authorization'] = `Bearer ${jwtToken}`;
+	            }
+
+	            const response = await fetch('/api/user/me', {
+	                method: 'GET',
+	                headers: headers, // 헤더 적용
+	                credentials: 'include', // 세션 인증 유지 (JSESSIONID 등)
+	                redirect: 'manual'
+	            });
+
+	            if (response.status === 401 || response.status === 403) return false;
+	            return response.ok;
+	        } catch (err) {
+	            console.error('로그인 상태 확인 중 오류 발생:', err);
+	            return false;
+	        }
+	    }
+
+	    async function togglePlayPause(event, musicId, buttonElement) {
+	        event.stopPropagation();
+	        const isLoggedIn = await checkLoginStatus();
+	        if (!isLoggedIn) {
+	            alert('스트리밍을 위해서는 로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+	            window.location.href = '/custom_login';
+	            return;
+	        }
+
+	        const audioPlayer = document.getElementById(`audio-${musicId}`);
+	        const iconElement = buttonElement.querySelector('i');
+
+	        if (audioPlayer && !audioPlayer.paused) {
+	            audioPlayer.pause();
+	            iconElement.className = 'bi bi-play-fill';
+	            buttonElement.textContent = ' 재생';
+	            buttonElement.prepend(iconElement);
+	            currentPlayingAudio = null;
+	            currentPlayingButton = null;
+	            return;
+	        }
+
+	        if (currentPlayingAudio && currentPlayingAudio !== audioPlayer) {
+	            currentPlayingAudio.pause();
+	            if (currentPlayingButton) {
+	                currentPlayingButton.innerHTML = '<i class="bi bi-play-fill"></i> 재생';
+	            }
+	        }
+
+	        if (audioPlayer) {
+	            try {
+	                await audioPlayer.play();
+	                iconElement.className = 'bi bi-pause-fill';
+	                buttonElement.textContent = ' 일시정지';
+	                buttonElement.prepend(iconElement);
+	                currentPlayingAudio = audioPlayer;
+	                currentPlayingButton = buttonElement;
+	            } catch (error) {
+	                console.error('음악 재생 실패:', error);
+	                if (error.name === 'NotAllowedError') {
+	                    alert('음악 자동 재생이 차단되었습니다. 사용자 상호작용 후 다시 시도해주세요.');
+	                } else {
+	                    alert('음악 재생에 실패했습니다: ' + error.message);
+	                }
+	            }
+	        }
+	    }
+	    
+	    // music_list.html에서 가져온 공개용 음악 목록을 불러오는 함수
+	    async function fetchPublicMusicList() {
+	        const listContainer = document.getElementById('public-music-list-container');
+	        let loadingMessage = document.getElementById('loading-message');
+
+	        if (loadingMessage) {
+	            loadingMessage.style.display = 'block';
+	        } else {
+	            loadingMessage = document.createElement('p');
+	            loadingMessage.id = 'loading-message';
+	            loadingMessage.className = 'text-center text-muted';
+	            loadingMessage.textContent = '음악을 불러오는 중...';
+	            // music_list의 card-body가 아직 로드되지 않았을 수 있으므로 DOMContentLoaded 이후에 실행됩니다.
+	            document.querySelector('.card-body')?.prepend(loadingMessage); 
+	        }
+
+	        listContainer.innerHTML = ''; // 기존 음악 카드들을 모두 제거
+
+	        try {
+	            const headers = {};
+	            if (jwtToken) { // JWT 토큰이 있다면 추가
+	                headers['Authorization'] = `Bearer ${jwtToken}`;
+	                console.log('[fetchPublicMusicList] Authorization header added with JWT token.');
+	            } else {
+	                console.warn('[fetchPublicMusicList] No JWT token available for public music list request. This might be public.');
+	            }
+
+	            const response = await fetch(`${API_BASE_URL}?page=${currentPage}&size=${pageSize}&sort=uploadDate,desc`, { headers: headers });
+
+	            if (response.status === 401 || response.status === 403) {
+	                console.warn('음악 목록을 불러오는 데 실패했습니다: 인증 또는 권한 부족. 로그인 페이지로 이동합니다.');
+	                if (loadingMessage) loadingMessage.style.display = 'none';
+	                listContainer.innerHTML = '<p class="text-danger text-center">음악 목록을 보려면 로그인이 필요합니다.</p>';
+	                alert('음악 목록을 보려면 로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+	                window.location.href = '/custom_login';
+	                return;
+	            }
+
+	            if (!response.ok) {
+	                throw new Error(`HTTP error! status: ${response.status}`);
+	            }
+	            const pageData = await response.json();
+	            const musicList = pageData.content;
+
+	            if (musicList && musicList.length > 0) {
+	                loadingMessage.style.display = 'none'; // 로딩 메시지 숨김
+	                musicList.forEach(music => {
+	                    const coverFileName = music.coverImagePath
+	                                       ? music.coverImagePath.split('/').pop().split('\\').pop() // 슬래시와 역슬래시 모두 처리
+	                                       : null;
+
+	                                   const coverImageUrl = coverFileName
+	                                       ? `http://localhost:8485/api/files/cover-image/${coverFileName}`
+	                                       : '/images/default_album_cover.png'; // 기본 이미지 경로
+
+	                    const colDiv = document.createElement('div');
+	                    colDiv.className = 'col-md-3 col-sm-6';
+	                    colDiv.innerHTML = `
+	                        <div class="card music-card">
+	                            <a href="/music_detail?id=${music.id}" class="music-info-link">
+	                                <img 
+	                                    src="${coverImageUrl}" 
+	                                    class="card-img-top" 
+	                                    alt="앨범 커버"
+	                                    onerror="this.onerror=null;this.src='/images/default_album_cover.png';"> </a>
+
+	                            <div class="card-body music-card-body">
+	                                <a href="/music_detail?id=${music.id}" class="music-info-link">
+	                                    <h5 class="music-title">${music.title}</h5>
+	                                    <p class="music-artist">${Array.isArray(music.artist) ? music.artist.join(', ') : music.artist}</p>
+	                                    <p class="music-album">${music.album ? music.album : 'N/A'}</p>
+	                                    <small class="text-muted">
+	                                        ${music.duration ? '재생 시간: ' + formatDuration(music.duration) : ''}
+	                                    </small>
+	                                </a>
+
+	                                <div class="play-button-container">
+	                                    <audio id="audio-${music.id}" preload="none" style="display: none;">
+	                                        <source src="${API_BASE_URL}/stream/${music.id}" type="audio/mpeg">
+	                                        Your browser does not support the audio element.
+	                                    </audio>
+
+	                                    <button class="btn btn-dark" onclick="togglePlayPause(event, ${music.id}, this)">
+	                                        <i class="bi bi-play-fill"></i> 재생
+	                                    </button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    `;
+	                    listContainer.appendChild(colDiv);
+	                });
+	            } else {
+	                listContainer.innerHTML = '<p class="text-center text-muted">등록된 음악이 없습니다.</p>';
+	                loadingMessage.style.display = 'none';
+	            }
+	        } catch (error) {
+	            console.error('음악 목록을 불러오는 데 실패했습니다:', error);
+	            if (loadingMessage) loadingMessage.style.display = 'none';
+	            listContainer.innerHTML = '<p class="text-danger text-center">음악 목록을 불러오는 데 실패했습니다.</p>';
+	        }
+	    }
+
+	    // music_list.html에서 가져온 플레이리스트 모달 초기화 로직
+	    function initializePlaylistModal() {
+	        const createPlaylistForm = document.getElementById('createPlaylistForm');
+	        const createPlaylistModalElement = document.getElementById('createPlaylistModal');
+	        let createPlaylistModal = null;
+
+	        if (createPlaylistModalElement) {
+	            createPlaylistModal = new bootstrap.Modal(createPlaylistModalElement);
+	        } else {
+	            console.warn("경고: ID 'createPlaylistModal'을 가진 HTML 요소를 찾을 수 없습니다. 플레이리스트 모달이 작동하지 않을 수 있습니다.");
+	        }
+
+	        if (createPlaylistForm && createPlaylistModal) {
+	            createPlaylistForm.addEventListener('submit', async function(event) {
+	                event.preventDefault();
+
+	                const title = document.getElementById('playlistTitle').value;
+	                const description = document.getElementById('playlistDescription').value;
+
+	                if (!title.trim()) {
+	                    alert('플레이리스트 제목은 필수입니다.');
+	                    return;
+	                }
+
+	                try {
+	                    const response = await fetch('/api/playlists', {
+	                        method: 'POST',
+	                        headers: {
+	                            'Content-Type': 'application/json',
+	                            'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 헤더에 추가
+	                        },
+	                        body: JSON.stringify({ title, description })
+	                    });
+
+	                    if (response.ok) {
+	                        const newPlaylist = await response.json();
+	                        alert(`플레이리스트 '${newPlaylist.title}'이(가) 생성되었습니다.`);
+	                        createPlaylistModal.hide();
+	                        createPlaylistForm.reset();
+	                        window.location.reload(); // 페이지 새로고침하여 목록 업데이트 (간단한 방법)
+	                    } else if (response.status === 401) {
+	                        alert('플레이리스트 생성은 로그인이 필요합니다.');
+	                        window.location.href = '/custom_login';
+	                    } else if (response.status === 400) {
+	                        const errorData = await response.json();
+	                        alert('플레이리스트 생성 실패: ' + (errorData.message || '제목을 확인해주세요.'));
+	                    } else {
+	                        alert('플레이리스트 생성 중 오류가 발생했습니다.');
+	                        console.error('플레이리스트 생성 실패:', response.status, await response.text());
+	                    }
+	                } catch (error) {
+	                    console.error('플레이리스트 생성 요청 중 에러:', error);
+	                    alert('네트워크 오류 또는 서버 응답 문제 발생.');
+	                }
+	            });
+	        } else {
+	            console.warn("경고: 플레이리스트 생성 폼 또는 모달 요소가 없거나, Bootstrap 모달 객체를 초기화할 수 없습니다. 관련 기능이 작동하지 않을 수 있습니다.");
+	        }
+	    }
+	</script> -->
+
+    <style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			background-color: #f8f9fa;
+		}
+
+		.container {
+			padding: 30px;
+			border-radius: 8px;
+			max-width: 960px;
+			margin: 50px auto;
+			background-color: #ffffff;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+		}
+
+		h1 {
+			color: #333;
+		}
+
+		p {
+			color: #666;
+		}
+
+		a {
+			text-decoration: none;
+			color: #007bff;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		.user-info {
+			margin-top: 20px;
+			padding: 15px;
+			background-color: #f0f8ff;
+			border-radius: 5px;
+			text-align: left;
+		}
+
+		#resultsContainer { 
+			border: 1px solid #ccc; 
+			padding: 10px; 
+			min-height: 100px; 
+			text-align: left;
+			margin-top: 20px;
+		}
+		.music-item { 
+			border-bottom: 1px dashed #eee; 
+			padding: 10px 0; 
+		}
+		.music-item:last-child { 
+			border-bottom: none; 
+		}
+		.music-item h3 { 
+			margin: 0 0 5px 0; 
+			color: #333; 
+		}
+		.music-item p { 
+			margin: 0; 
+			color: #666; 
+			font-size: 0.9em; 
+		}
+		.music-item button { 
+			margin-top: 5px; 
+			padding: 5px 10px; 
+			background-color: #007bff; 
+			color: white; 
+			border: none; 
+			border-radius: 4px; 
+			cursor: pointer; 
+		}
+		.music-item button:hover { 
+			background-color: #0056b3; 
+		}
+		.pagination {
+			text-align: center;
+			margin-top: 20px;
+		}
+		.pagination button { 
+			margin: 0 5px; 
+			padding: 8px 15px; 
+			background-color: #28a745; 
+			color: white; 
+			border: none; 
+			border-radius: 4px; 
+			cursor: pointer; 
+		}
+		.pagination button:disabled { 
+			background-color: #cccccc; 
+			cursor: not-allowed; 
+		}
+		.search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-bar input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            width: 300px;
+        }
+        .search-bar .search-button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .search-bar .search-button:hover {
+            background-color: #0056b3;
+        }
+	</style>
+</head>
+
+<body>
+	<header class="main-header">
+		<div class="header-content">
+			<div class="logo">
+				</div>
+			<div class="search-bar">
+				<input type="text" id="keywordInput" placeholder="여름 밤을 담은 감성 시티팝 🎶･*:.｡.☆彡"> 
+				<button type="button" class="search-button" onclick="searchMusic()">검색</button>
+			</div>
+		</div>
+		<nav class="main-nav">
+			<ul>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownChart" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						차트100
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownChart">
+						<li><a class="dropdown-item" href="#">일간 차트</a></li>
+						<li><a class="dropdown-item" href="#">주간 차트</a></li>
+						<li><a class="dropdown-item" href="#">월간 차트</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownNewMusic" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						최신음악
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownNewMusic">
+						<li><a class="dropdown-item" href="#">최신 곡</a></li>
+						<li><a class="dropdown-item" href="#">최신 앨범</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownGenre" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						장르음악
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownGenre">
+						<li><a class="dropdown-item" href="#">발라드</a></li>
+						<li><a class="dropdown-item" href="#">댄스</a></li>
+						<li><a class="dropdown-item" href="#">힙합</a></li>
+						<li><a class="dropdown-item" href="#">록</a></li>
+						<li><a class="dropdown-item" href="#">재즈</a></li>
+						<li><a class="dropdown-item" href="#">POP</a></li>
+						<li><a class="dropdown-item" href="#">R&B</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownNotice" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						공지사항
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownNotice">
+						<li><a class="dropdown-item" href="/notice_list">일반 공지</a></li>
+						<li><a class="dropdown-item" href="#">업데이트 소식</a></li>
+						<li><a class="dropdown-item" href="#">이벤트</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRecommend" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						추천
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownRecommend">
+						<li><a class="dropdown-item" href="#">맞춤 추천</a></li>
+						<li><a class="dropdown-item" href="#">에디터 추천</a></li>
+						<li><a class="dropdown-item" href="#">인기 플레이리스트</a></li>
+					</ul>
+				</li>
+
+				<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownFreeboard" role="button"
+				        data-bs-toggle="dropdown" aria-expanded="false">
+				        자유게시판
+				    </a>
+				    <ul class="dropdown-menu" aria-labelledby="navbarDropdownFreeboard">
+				        <li><a class="dropdown-item" href="/board">인기 글</a></li> <!-- React 앱의 기본 경로로 이동 -->
+				        <li><a class="dropdown-item" href="/board/posts/new">새 글 작성</a></li> <!-- React 앱 내부 경로로 이동 -->
+				        <li><a class="dropdown-item" href="/board">내 글 보기</a></li> <!-- React 앱의 기본 경로로 이동 -->
+				    </ul>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMusicHug" role="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						뮤직허그
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdownMusicHug">
+						<li><a class="dropdown-item" href="#">실시간 듣기</a></li>
+						<li><a class="dropdown-item" href="#">친구 초대</a></li>
+						<li><a class="dropdown-item" href="#">내 허그룸</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+	</header>
+	<div class="container">
+		<h1>환영합니다!</h1>
+
+		<p>이곳은 메인 페이지입니다. 성공적으로 로그인되었습니다.</p>
+
+		<div th:if="${session.user != null}" class="user-info">
+			<h3>사용자 정보:</h3>
+			<p><strong>이름:</strong> <span th:text="${session.user.username}"></span></p>
+			<p><strong>이메일:</strong> <span th:text="${session.user.email}"></span></p>
+			<p><strong>닉네임:</strong> <span th:text="${session.user.nickname}"></span></p>
+		</div>
+		<div th:unless="${session.user != null}" class="user-info">
+			<p>사용자 정보를 불러올 수 없습니다.</p>
+		</div>
+
+		<p><a th:href="@{/log_out}">로그아웃</a></p>
+		<div class="mt-4">
+		          <div th:replace="~{music_list :: musicListContent}"></div>
+		      </div>
+		
+		<h2>음악 검색 결과</h2>
+		<div id="resultsContainer">
+		    <p>검색 결과가 없습니다.</p>
+		</div>
+		
+		<div id="paginationContainer" class="pagination">
+		    <button onclick="changePage(-1)" id="prevPageBtn" disabled>이전 페이지</button>
+		    <span id="currentPageInfo">페이지 1 / 1</span>
+		    <button onclick="changePage(1)" id="nextPageBtn" disabled>다음 페이지</button>
+		</div>
+
+	</div>
+	<div class="signup-link">
+		<p>이미 계정이 있으신가요? <a href="/custom_login">로그인</a></p>
+		<p>계정이 없으신가요? <a href="/signup">회원가입</a></p>
+	</div>
+	<div>
+		<p><a href="/mypage">마이페이지</a></p>
+	</div>
+	
+	<div th:if="${session.user != null and session.user.roles.contains('ROLE_ADMIN')}">
+		<a href="/music_upload">업로드 페이지</a>
+	</div>
+
+</body>
+
+</html>

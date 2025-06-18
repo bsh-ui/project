@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5' // Spring Boot 3.x 최신 안정 버전
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.boot'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) // Java 17
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    /*maven { url 'https://jitpack.io' }*/
+}
+
+dependencies {
+    // 핵심 Spring Boot 스타터
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // ⭐ Spring Data JPA 스타터 (데이터베이스 연동)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // ⭐⭐ jaudiotagger 의존성 추가 ⭐⭐
+/*	implementation 'com.github.ijabz:jaudiotagger:v2.2.3' // 또는 필요한 태그*/
+	/*implementation 'org.jaudiotagger:jaudiotagger:3.0.1'*/
+	implementation("net.jthink:jaudiotagger:3.0.1")
+    // ⭐ Thymeleaf 스타터 (HTML 템플릿 엔진)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    // Spring Data Solr Starter
+  	implementation 'org.apache.solr:solr-solrj:9.8.0'
+    // JWT 관련
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // 데이터베이스 드라이버
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // 로깅
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    // 이미지 썸네일
+    implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.20'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // OAuth2 클라이언트
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // 개발 도구
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // 테스트 관련
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 💡 주의: 이전에 JSP를 위해 추가했던 tomcat-embed-jasper, jstl 의존성은 제거되어야 합니다.
+    // 주석 처리되어 있거나 아예 없어야 합니다.
+    // implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    // implementation 'jakarta.servlet:jakarta.servlet.jsp.jstl'
+    // implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// ⭐ 이 블록을 추가합니다. ⭐
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-parameters'
+}
