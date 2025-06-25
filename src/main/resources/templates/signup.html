@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원가입</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			margin: 0;
+		}
+
+		.signup-container {
+			background-color: #fff;
+			padding: 30px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			width: 100%;
+			max-width: 400px;
+			box-sizing: border-box;
+		}
+
+		h2 {
+			text-align: center;
+			color: #333;
+			margin-bottom: 20px;
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 5px;
+			color: #555;
+			font-weight: bold;
+		}
+
+		.form-group input[type="text"],
+		.form-group input[type="email"],
+		.form-group input[type="date"],
+		.form-group select {
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			box-sizing: border-box;
+			font-size: 16px;
+		}
+
+		.form-group input[type="radio"] {
+			margin-right: 5px;
+		}
+
+		.gender-group label {
+			display: inline-block;
+			margin-right: 15px;
+			margin-left: 0;
+		}
+
+		.error-message {
+			color: red;
+			font-size: 0.9em;
+			margin-top: 5px;
+			display: none;
+			/* 초기에는 숨김 */
+		}
+
+		.button-container {
+			text-align: center;
+			margin-top: 20px;
+		}
+
+		button {
+			background-color: #007bff;
+			color: white;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 18px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		button:hover {
+			background-color: #0056b3;
+		}
+
+		.password-toggle {
+		    background: none;
+		    border: none;
+		    cursor: pointer;
+		    color: #888; /* 아이콘 색상 (회색 계열) */
+		    font-size: 0.9em; /* 아이콘 크기 약간 줄임 */
+		    padding: 5px;
+		    position: absolute; /* 절대 위치로 입력창 위에 겹치게 */
+		    right: 5px; /* 오른쪽에서 5px 떨어진 위치 */
+		    top: 50%; /* 위에서 50% 지점 */
+		    transform: translateY(-50%); /* 세로 중앙 정렬 */
+		    z-index: 2; /* 입력 필드 위에 오도록 z-index 설정 */
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    width: 25px; /* 아이콘 영역 너비 제한 */
+		    height: 25px; /* 아이콘 영역 높이 제한 */
+		}
+
+		.password-toggle:hover {
+		    color: #555; /* 호버 시 색상 변경 */
+		}
+
+		/* ⭐ 변경된 .password-container input 스타일 (오른쪽 패딩 줄임) */
+		.password-container input {
+		    flex-grow: 1;
+		    width: 100%;
+		    padding: 10px 30px 10px 10px; /* 오른쪽 패딩을 줄여 아이콘 공간 확보 */
+		    border: 1px solid #ddd;
+		    border-radius: 4px;
+		    box-sizing: border-box;
+		    font-size: 16px;
+		}
+
+		/* ⭐ 기존 .password-container 스타일 유지 */
+		.password-container {
+		    position: relative; /* 자식 요소의 absolute 위치를 위한 기준 */
+		    display: flex;
+		    align-items: center;
+		    width: 100%;
+		}
+		.link-back {
+			display: block;
+			text-align: center;
+			margin-top: 15px;
+			color: #007bff;
+			text-decoration: none;
+		}
+
+		.link-back:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="signup-container">
+		<h2>회원가입</h2>
+		<form id="signupForm">
+			<div class="form-group">
+				<label for="username">아이디 (5~20자 영문, 숫자)</label>
+				<input type="text" id="username" name="username" required minlength="5" maxlength="20">
+				<div class="error-message" id="usernameError"></div>
+			</div>
+			<div class="form-group">
+				<label for="email">이메일</label>
+				<input type="email" id="email" name="email" required>
+				<div class="error-message" id="emailError"></div>
+			</div>
+			<div class="form-group">
+				<label for="password">비밀번호 (8~20자 영문, 숫자, 특수문자 포함)</label>
+				<div class="password-container">
+					<input type="password" id="password" name="password" required minlength="8" maxlength="20">
+					<button type="button" class="password-toggle" data-target="password">
+						<i class="fas fa-eye"></i> </button>
+				</div>
+				<div class="error-message" id="passwordError"></div>
+			</div>
+			<div class="form-group">
+				<label for="confirmPassword">비밀번호 확인</label>
+				<div class="password-container">
+					<input type="password" id="confirmPassword" name="confirmPassword" required>
+					<button type="button" class="password-toggle" data-target="confirmPassword">
+						<i class="fas fa-eye"></i> </button>
+				</div>
+				<div class="error-message" id="confirmPasswordError"></div>
+			</div>
+			<div class="form-group">
+				<label for="nickname">닉네임 (2~10자 한글, 영문, 숫자)</label>
+				<input type="text" id="nickname" name="nickname" required minlength="2" maxlength="10">
+				<div class="error-message" id="nicknameError"></div>
+			</div>
+			<div class="form-group">
+				<label for="birth">생년월일</label>
+				<input type="date" id="birth" name="birth">
+			</div>
+			<div class="form-group">
+				<label>성별</label>
+				<div class="gender-group">
+					<input type="radio" id="genderM" name="gender" value="M" required> <label for="genderM">남자</label>
+					<input type="radio" id="genderF" name="gender" value="F" required> <label for="genderF">여자</label>
+				</div>
+				<div class="error-message" id="genderError"></div>
+			</div>
+			<div class="button-container">
+				<button type="submit">회원가입</button>
+			</div>
+		</form>
+		<a href="/" class="link-back">뒤로가기</a>
+	</div>
+
+	<script>
+		document.getElementById('signupForm').addEventListener('submit', async function(event) {
+			event.preventDefault(); // 폼 기본 제출 동작 방지
+
+			// 모든 에러 메시지 초기화
+			document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+			let isValid = true;
+
+			// 값 가져오기
+			const username = document.getElementById('username').value.trim();
+			const email = document.getElementById('email').value.trim();
+			const password = document.getElementById('password').value;
+			const confirmPassword = document.getElementById('confirmPassword').value;
+			const nickname = document.getElementById('nickname').value.trim();
+			const birth = document.getElementById('birth').value;
+			const gender = document.querySelector('input[name="gender"]:checked') ?
+				document.querySelector('input[name="gender"]:checked').value : 'N';
+
+			// 프론트엔드 유효성 검사 (기존 SignUpRequestDTO의 @Pattern과 유사하게)
+			// 아이디 (영문, 숫자만, 5~20자)
+			if (!/^[a-zA-Z0-9]{5,20}$/.test(username)) {
+				showError('usernameError', '아이디는 5~20자의 영문 대소문자, 숫자로만 구성되어야 합니다.');
+				isValid = false;
+			}
+
+			// 이메일
+			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				showError('emailError', '유효한 이메일 주소를 입력해주세요.');
+				isValid = false;
+			}
+
+			// 비밀번호 (8~20자, 영문, 숫자, 특수문자 최소 하나 포함)
+			// ⭐ 정규식 수정: 특수문자 그룹에 빠진 문자 추가 및 시작/끝 앵커 추가
+			if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]).{8,20}$/.test(password)) {
+				showError('passwordError', '비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.');
+				isValid = false;
+			}
+
+			// 비밀번호 확인
+			if (password !== confirmPassword) {
+				showError('confirmPasswordError', '비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+				isValid = false;
+			}
+
+			// 닉네임 (한글, 영문, 숫자만, 2~10자)
+			if (!/^[a-zA-Z0-9가-힣]{2,10}$/.test(nickname)) {
+				showError('nicknameError', '닉네임은 2~10자의 한글, 영문, 숫자로만 구성되어야 합니다.');
+				isValid = false;
+			}
+
+            // 성별 필수 체크
+            if (gender === 'N') {
+                showError('genderError', '성별을 선택해주세요.');
+                isValid = false;
+            }
+
+			if (!isValid) {
+				return; // 유효성 검사 실패 시 제출 중단
+			}
+
+			// 전송할 데이터 객체 생성
+			const formData = {
+				username: username,
+				email: email,
+				password: password,
+				nickname: nickname,
+				birth: birth,
+				gender: gender
+			};
+
+			console.log("회원가입 요청 데이터:", formData); // 전송할 데이터 로깅
+
+			try {
+				// ⭐ 다시 절대 경로로 변경 및 /api/auth/signup 경로 사용 ⭐
+				const response = await fetch('http://localhost:8485/api/auth/signup', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(formData)
+				});
+
+				console.log("서버 응답 상태:", response.status, response.statusText); // 응답 상태 로깅
+
+				let errorMessage = '알 수 없는 오류가 발생했습니다.';
+				const contentType = response.headers.get('Content-Type');
+
+				if (contentType && contentType.includes('application/json')) {
+					const result = await response.json();
+					console.log("서버 응답 JSON:", result); // 응답 JSON 로깅
+					errorMessage = result.message || JSON.stringify(result); // 서버 메시지가 있다면 사용, 없다면 전체 JSON
+				} else {
+					// JSON이 아닌 경우, 응답을 텍스트로 읽어옴
+					const textResponse = await response.text();
+					console.error("Raw 서버 응답 텍스트:", textResponse); // 원시 텍스트 로깅
+					errorMessage = textResponse; // 원시 텍스트를 메시지로 사용
+				}
+
+				if (response.ok) { // HTTP 상태 코드가 200-299 범위인 경우
+					alert('회원가입이 성공적으로 완료되었습니다!');
+					window.location.href = '/custom_login'; // 로그인 페이지로 이동
+				} else {
+					// HTTP 상태 코드가 200-299 범위가 아닌 경우 (예: 400, 401, 500 등)
+					// errorMessage는 이미 위에서 파싱된 JSON 메시지 또는 원시 텍스트입니다.
+					alert('회원가입 실패: ' + errorMessage);
+					console.error('회원가입 실패 응답:', response.status, errorMessage);
+				}
+			} catch (error) {
+				console.error('회원가입 요청 중 네트워크 오류 발생:', error);
+				// 네트워크 오류 (서버에 도달하지 못했거나, 응답을 받지 못함)
+				alert('회원가입 중 네트워크 오류가 발생했습니다. 서버가 실행 중인지 확인해주세요.');
+			}
+		});
+
+		function showError(elementId, message) {
+			const errorElement = document.getElementById(elementId);
+			if (errorElement) {
+				errorElement.textContent = message;
+				errorElement.style.display = 'block';
+			}
+		}
+
+		// 비밀번호와 확인 비밀번호 입력 시 실시간 일치 여부 확인
+		document.getElementById('password').addEventListener('input', checkPasswords);
+		document.getElementById('confirmPassword').addEventListener('input', checkPasswords);
+
+		function checkPasswords() {
+			const password = document.getElementById('password').value;
+			const confirmPassword = document.getElementById('confirmPassword').value;
+			const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+			if (confirmPassword === "") {
+				confirmPasswordError.style.display = 'none';
+				confirmPasswordError.textContent = '';
+				return;
+			}
+
+			if (password !== confirmPassword) {
+				showError('confirmPasswordError', '비밀번호가 일치하지 않습니다.');
+			} else {
+				confirmPasswordError.style.display = 'none';
+				confirmPasswordError.textContent = '';
+			}
+		}
+
+		// 아이디, 이메일, 닉네임 입력 시 중복 확인 (선택 사항 - 필요 시 백엔드 API 추가 필요)
+		// 백엔드에 `/api/check-username?username=...` 같은 엔드포인트가 있다고 가정
+		document.getElementById('username').addEventListener('focusout', async function() {
+			const username = this.value.trim();
+			// 유효한 형식일 때만 중복 확인 요청 (선택적)
+			if (username.length > 0 && /^[a-zA-Z0-9]{5,20}$/.test(username)) {
+				try {
+					// ⭐ 절대 경로 사용 및 showError로 변경 ⭐
+					const response = await fetch(`http://localhost:8485/api/check-username?username=${username}`);
+					const result = await response.json();
+					if (result.exists) {
+						showError('usernameError', '이미 사용 중인 아이디입니다.');
+					} else {
+						document.getElementById('usernameError').style.display = 'none';
+					}
+				} catch (e) {
+					console.error('아이디 중복 확인 실패:', e);
+				}
+			}
+		});
+		// 이메일 중복 확인
+		document.getElementById('email').addEventListener('focusout', async function() {
+			const email = this.value.trim();
+			if (email.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				try {
+					// ⭐ 절대 경로 사용 및 showError로 변경 ⭐
+					const response = await fetch(`http://localhost:8485/api/check-email?email=${email}`);
+					const result = await response.json();
+					if (result.exists) {
+						showError('emailError', '이미 등록된 이메일입니다.');
+					} else {
+						document.getElementById('emailError').style.display = 'none';
+					}
+				} catch (e) {
+					console.error('이메일 중복 확인 실패:', e);
+				}
+			}
+		});
+
+		// 닉네임 중복 확인
+		document.getElementById('nickname').addEventListener('focusout', async function() {
+			const nickname = this.value.trim();
+			if (nickname.length > 0 && /^[a-zA-Z0-9가-힣]{2,10}$/.test(nickname)) {
+				try {
+					// ⭐ 절대 경로 사용 및 showError로 변경 ⭐
+					const response = await fetch(`http://localhost:8485/api/check-nickname?nickname=${nickname}`);
+					const result = await response.json();
+					if (result.exists) {
+						showError('nicknameError', '이미 사용 중인 닉네임입니다.');
+					} else {
+						document.getElementById('nicknameError').style.display = 'none';
+					}
+				} catch (e) {
+					console.error('닉네임 중복 확인 실패:', e);
+				}
+			}
+		});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.password-toggle').forEach(button => {
+				button.addEventListener('click', function() {
+					const targetId = this.getAttribute('data-target');
+					const passwordInput = document.getElementById(targetId);
+					const icon = this.querySelector('i'); // 버튼 내의 아이콘 요소 찾기
+
+					if (passwordInput.type === 'password') {
+						passwordInput.type = 'text';
+						icon.classList.remove('fa-eye'); // 기존 눈 아이콘 제거
+						icon.classList.add('fa-eye-slash'); // 가려진 눈 아이콘 (눈에 사선 그어진 것) 추가
+					} else {
+						passwordInput.type = 'password';
+						icon.classList.remove('fa-eye-slash'); // 가려진 눈 아이콘 제거
+						icon.classList.add('fa-eye'); // 눈 아이콘 (보이는 것) 추가
+					}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>

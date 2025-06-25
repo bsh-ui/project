@@ -1,0 +1,82 @@
+/* src/styles/Signup.css */
+
+/*
+  These styles are custom and may override or complement Tailwind CSS.
+  They are specifically for elements where Tailwind's utility classes are
+  insufficient or where more complex styling/animations are needed.
+*/
+
+/* Custom Radio Button Styling */
+.gender-group input[type="radio"] {
+    /* Hide default radio button */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Custom styling */
+    display: inline-block;
+    width: 1.1rem; /* slightly larger */
+    height: 1.1rem; /* slightly larger */
+    border: 2px solid #9CA3AF; /* gray-400 for border */
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.gender-group input[type="radio"]:checked {
+    border-color: #2563EB; /* blue-600 for checked border */
+    background-color: #2563EB; /* blue-600 for checked background */
+}
+
+.gender-group input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 0.6rem; /* inner dot size */
+    height: 0.6rem; /* inner dot size */
+    background-color: #fff; /* white inner dot */
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.gender-group input[type="radio"]:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4); /* blue-600 with opacity for focus ring */
+}
+
+/* Message box animation */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.message-box {
+    animation: fadeInOut 5s forwards;
+}
+
+/* Optional: Scrollbar styling for a cleaner look */
+/* You might include this in index.css if you want it globally */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

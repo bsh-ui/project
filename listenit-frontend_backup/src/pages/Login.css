@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 50px;
+    text-align: center;
+}
+
+.container {
+    border: 1px solid #ccc;
+    padding: 30px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+h1 {
+    color: #333;
+}
+
+.social-login a {
+    display: block;
+    margin: 10px 0;
+    padding: 10px 20px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.social-login a:hover {
+    background-color: #e8e8e8;
+}
+
+.google {
+    background-color: #db4437;
+    color: white !important; /* 원래 HTML에서는 3c1e1e였으나, 가독성을 위해 white로 변경했습니다. */
+}
+
+.naver {
+    background-color: #03c75a;
+    color: white !important; /* 원래 HTML에서는 3c1e1e였으나, 가독성을 위해 white로 변경했습니다. */
+}
+
+.kakao {
+    background-color: #fee500;
+    color: #3c1e1e !important;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* 자체 로그인 폼 스타일 */
+.login-form-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.login-form-container div {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.login-form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.login-form-container input[type="text"],
+.login-form-container input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.login-form-container button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.login-form-container button:hover {
+    background-color: #0056b3;
+}
+
+.signup-link {
+    margin-top: 20px;
+}
+
+.signup-link p {
+    margin-bottom: 10px;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}

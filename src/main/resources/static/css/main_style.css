@@ -1,0 +1,286 @@
+/* 기본 스타일 초기화 */
+body {
+	margin: 0;
+	font-family: 'Arial', sans-serif;
+	color: #333;
+	background-color: #f8f8f8;
+}
+
+/* 헤더 스타일 */
+.main-header {
+	background-color: #6a9bd8; /* 다크한 배경 */
+	color: white;
+	padding: 15px 0;
+	text-align: center;
+	border-bottom: 1px solid #eee;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.header-content {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	padding: 0 20px;
+}
+
+.logo {
+	flex-basis: 150px;
+	text-align: left;
+}
+
+.logo img {
+	height: 40px;
+	margin-right: 20px;
+	max-height: 50px;
+}
+
+.search-bar {
+	display: flex;
+	flex-grow: 1;
+	max-width: 500px;
+	margin: 0 20px;
+	border: 1px solid #007bff;
+	border-radius: 20px;
+	overflow: hidden;
+	height: 40px;
+}
+
+.search-bar input[type="text"] {
+	flex-grow: 1;
+	border: none;
+	padding: 0 15px;
+	font-size: 16px;
+	outline: none;
+}
+
+.search-bar .search-button {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 0 15px;
+	cursor: pointer;
+	font-size: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0 20px 20px 0;
+}
+
+.search-bar .search-button:hover {
+	background-color: #0056b3;
+}
+
+
+/* 네비게이션 메뉴 스타일 */
+.main-nav {
+	max-width: 1200px;
+	margin: 10px auto 0;
+	padding: 0 20px;
+}
+
+.main-nav ul {
+	list-style: none;
+	padding: 0;
+	margin: 10px 0 0 0;
+	display: flex;
+	justify-content: center;
+	background-color: #5b8cbb; /* ⭐ 변경: 연한 파란색 계열 */
+	padding: 10px 0;
+}
+
+.main-nav li {
+	margin: 0 15px;
+	position: relative;
+}
+
+.main-nav a {
+	color: white;
+	font-weight: bold;
+	padding: 5px 0;
+	display: block;
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+.main-nav a:hover {
+	color: #e0f2ff; /* ⭐ 변경: 호버 시 더 연한 파란색 또는 흰색에 가까운 색 */
+	text-decoration: none;
+}
+
+/* Bootstrap 드롭다운 오버라이드 */
+.dropdown-menu {
+	background-color: #6a9bd8; /* ⭐ 변경: 드롭다운 배경색을 네비게이션보다 약간 더 밝은 파란색 */
+	border: none;
+	padding: 0;
+
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	display: none ;
+	min-width: 160px;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+}
+
+.dropdown-menu {
+  background-color: #495057;
+  border: none;
+  padding: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+
+  /* ✅ 세로 표시를 위해 display: flex 제거 */
+  display: block;
+  min-width: 160px;
+
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+
+  /* ✅ 세로 메뉴 표시를 위한 기본 설정 */
+  flex-direction: column;  /* 없어도 되지만 명확하게 명시해도 무방 */
+}
+
+.dropdown-menu a.dropdown-item {
+  display: block; /* ✅ a 태그가 한 줄에 하나씩 */
+  color: white;
+  padding: 8px 15px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.dropdown-menu a.dropdown-item:hover {
+  background-color: #5a6268;
+  color: #ffc107;
+}
+
+
+/* ⭐⭐⭐ 기존의 'hover' 관련 `display: block !important;` 규칙을 제거합니다. ⭐⭐⭐ */
+/*
+.main-nav .dropdown:hover>.dropdown-menu {
+	display: block !important;
+}
+*/
+
+/* ⭐⭐⭐ 새로운 hover 효과를 위한 CSS 추가 (display 속성은 Bootstrap이 관리) ⭐⭐⭐ */
+/*
+   Bootstrap의 .dropdown.show 클래스를 활용하여 hover 시에도 보이게 합니다.
+   이때 display 속성은 Bootstrap JS가 제어하므로, 이 CSS는 .show 클래스를 강제 적용하는 역할을 합니다.
+*/
+.main-nav .dropdown:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    transition: visibility 0.3s, opacity 0.3s, transform 0.3s;
+}
+
+.main-nav .dropdown-menu {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: visibility 0.3s, opacity 0.3s, transform 0.3s;
+}
+
+/* .dropdown-toggle:active에 대한 pointer-events: none; 은 그대로 두어도 됩니다. */
+.main-nav .dropdown>.dropdown-toggle:active {
+	pointer-events: none;
+}
+
+/* 메인 콘텐츠 (기존 main-content -> container로 통합) */
+.container {
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 960px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 사용자 정보 섹션 (기존 .user-info) */
+.user-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border-radius: 5px;
+    text-align: left;
+}
+
+/* ⭐ 새로운 음악 섹션 스타일 ⭐ */
+.music-section {
+	margin-top: 40px;
+	padding: 20px;
+	background-color: #f0f0f0;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	text-align: left;
+}
+
+.music-section h2 {
+	color: #333;
+	margin-bottom: 25px;
+	font-size: 1.8rem;
+	text-align: center;
+}
+
+.music-cards-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	justify-content: center;
+}
+
+.music-card {
+	width: 180px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	background-color: #fff;
+	transition: transform 0.2s;
+}
+
+.music-card:hover {
+	transform: translateY(-5px);
+}
+
+.music-card img {
+	width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-bottom: 1px solid #eee;
+}
+
+.music-card-body {
+	padding: 10px;
+}
+
+.music-card-body h5 {
+	font-size: 1rem;
+	margin-bottom: 5px;
+	color: #333;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.music-card-body p {
+	font-size: 0.85rem;
+	color: #777;
+	margin-bottom: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* 푸터 스타일 */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-size: 14px;
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+}

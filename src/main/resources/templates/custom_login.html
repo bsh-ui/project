@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>로그인</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 50px;
+			text-align: center;
+		}
+
+		.container {
+			border: 1px solid #ccc;
+			padding: 30px;
+			border-radius: 8px;
+			display: inline-block;
+		}
+
+		h1 {
+			color: #333;
+		}
+
+		.social-login a {
+			display: block;
+			margin: 10px 0;
+			padding: 10px 20px;
+			background-color: #f8f8f8;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			text-decoration: none;
+			color: #333;
+			font-weight: bold;
+		}
+
+		.social-login a:hover {
+			background-color: #e8e8e8;
+		}
+
+		.google {
+			background-color: #db4437;
+			color: 3c1e1e !important;
+		}
+
+		.naver {
+			background-color: #03c75a;
+			color: 3c1e1e !important;
+		}
+
+		.kakao {
+			background-color: #fee500;
+			color: #3c1e1e !important;
+		}
+
+		.error-message {
+			color: red;
+			margin-bottom: 15px;
+			font-weight: bold;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>로그인</h1>
+		<p>소셜 계정으로 로그인하세요.</p>
+		<div class="login-form-container">
+			<h2>자체 로그인</h2>
+			<div th:if="${loginError}" class="error-message">
+				<p th:text="${loginError}"></p>
+			</div>
+			<form action="/api/login" method="post" id="loginForm">
+				<div>
+					<label for="username">아이디 (이메일):</label>
+					<input type="text" id="username" name="username" required>
+				</div>
+				<div>
+					<label for="password">비밀번호:</label>
+					<input type="password" id="password" name="password" required>
+				</div>
+				<div class="checkbox-container">
+					<input type="checkbox" id="rememberMe" name="rememberMe">
+					<label for="rememberMe">아이디 저장</label>
+				</div>
+				<button type="submit">로그인</button>
+			</form>
+		</div>
+		<div class="social-login">
+			<a th:href="@{/oauth2/authorization/google}" class="google">Google 로그인</a>
+			<a th:href="@{/oauth2/authorization/naver}" class="naver">Naver 로그인</a>
+			<a th:href="@{/oauth2/authorization/kakao}" class="kakao">Kakao 로그인</a>
+		</div>
+	</div>
+	<div class="signup-link">
+		<p>계정이 없으신가요? <a href="/signup">회원가입</a></p>
+		<a href="/" class="link-back">뒤로가기</a>
+	</div>
+
+</body>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const usernameInput = document.getElementById('username');
+		const rememberMeCheckbox = document.getElementById('rememberMe');
+		const loginForm = document.getElementById('loginForm');
+		const storedUsername = localStorage.getItem('savedUsername');
+		const rememberMeChecked = localStorage.getItem('rememberMeChecked');
+
+		console.log("페이지 로드됨 - storedUsername:", storedUsername);
+		console.log("페이지 로드됨 - rememberMeChecked (raw):", rememberMeChecked);
+
+		if (storedUsername) {
+			usernameInput.value = storedUsername;
+		}
+
+		if (rememberMeChecked === 'true') {
+			rememberMeCheckbox.checked = true;
+			console.log("체크박스 상태: True로 설정됨");
+		} else {
+			console.log("체크박스 상태: False 또는 null (체크 안 됨)");
+		}
+
+		loginForm.addEventListener('submit', function () {
+			console.log("폼 제출 이벤트 발생!");
+			if (rememberMeCheckbox.checked) {
+				localStorage.setItem('savedUsername', usernameInput.value);
+				localStorage.setItem('rememberMeChecked', 'true');
+				console.log("체크박스 체크됨! localStorage에 저장:", usernameInput.value, 'true');
+			} else {
+				localStorage.removeItem('savedUsername');
+				localStorage.removeItem('rememberMeChecked');
+				console.log("체크박스 체크 안 됨! localStorage에서 제거.");
+			}
+		});
+	});
+</script>
+
+</html>

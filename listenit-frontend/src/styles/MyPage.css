@@ -1,0 +1,390 @@
+/* src/styles/MyPage.css */
+
+/*
+  Base styles for MyPage component
+  These styles are intended to complement Tailwind CSS, providing
+  more specific component-level styling where Tailwind might be too generic.
+*/
+
+body {
+    background-color: #f0f2f5; /* 약간 더 부드러운 배경색 */
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    color: #333;
+    line-height: 1.6;
+    margin: 0; /* body 기본 마진 제거 */
+    padding: 0;
+}
+
+.container {
+    max-width: 800px; /* 컨테이너 너비 약간 넓힘 */
+    margin: 50px auto; /* 상하 마진 조정 */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px; /* 더 둥근 모서리 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* 더 깊은 그림자 */
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 40px; /* 마진 증가 */
+    font-size: 2.8em; /* 폰트 사이즈 조정 */
+    font-weight: 800; /* 더 볼드하게 */
+    letter-spacing: -0.5px; /* 자간 조정 */
+}
+
+h2 {
+    color: #34495e;
+    margin-top: 40px; /* 섹션 간 마진 증가 */
+    margin-bottom: 25px; /* 마진 증가 */
+    font-size: 2.2em; /* 폰트 사이즈 조정 */
+    font-weight: 700;
+    border-bottom: 2px solid #e0e0e0; /* 더 연한 구분선 */
+    padding-bottom: 12px;
+}
+
+section {
+    margin-bottom: 40px;
+    padding: 30px;
+    background-color: #fdfdfd; /* 섹션 배경색 미세 조정 */
+    border-radius: 10px; /* 섹션 모서리 둥글게 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); /* 섹션 그림자 */
+    border: 1px solid #eee; /* 옅은 테두리 */
+}
+
+/* 정보 표시 텍스트 */
+p {
+    margin-bottom: 15px;
+    font-size: 1.05em;
+    color: #555;
+}
+
+p strong {
+    color: #333;
+    margin-right: 8px;
+}
+
+/* 폼 요소 스타일 */
+form div {
+    margin-bottom: 25px; /* 폼 필드 간격 증가 */
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #444;
+    font-size: 1.05em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 14px 18px; /* 패딩 증가 */
+    border: 1px solid #ccc; /* 테두리 색상 조정 */
+    border-radius: 8px; /* 더 둥근 입력창 */
+    font-size: 1.0em;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+select:focus {
+    border-color: #6a1b9a; /* 보라색 계열로 변경 */
+    box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.2); /* 포커스 시 그림자 */
+    outline: none;
+    transform: translateY(-2px); /* 약간 위로 뜨는 효과 */
+}
+
+/* 라디오 버튼 그룹 */
+.gender-options {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* 간격 증가 */
+    margin-top: 10px;
+    margin-bottom: 25px; /* 하단 마진 */
+}
+
+.gender-options label {
+    margin-bottom: 0;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #555;
+    font-size: 1em;
+}
+
+.gender-options input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+    transform: scale(1.2); /* 라디오 버튼 크기 키움 */
+    cursor: pointer;
+}
+
+/* 버튼 스타일 */
+button {
+    background-color: #8e24aa; /* 메인 버튼 색상 (진한 보라) */
+    color: white;
+    padding: 14px 30px; /* 패딩 증가 */
+    border: none;
+    border-radius: 8px; /* 둥근 버튼 */
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 150px; /* 최소 너비 지정 */
+}
+
+button:hover {
+    background-color: #7b1fa2; /* 호버 색상 */
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* 특정 버튼 스타일 오버라이드 */
+.delete-account-btn {
+    background-color: #dc3545; /* 붉은색 */
+}
+
+.delete-account-btn:hover {
+    background-color: #c82333;
+}
+
+/* 메시지 영역 */
+.message-area {
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    font-weight: 500;
+    text-align: center;
+    font-size: 1.05em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    opacity: 0; /* 초기에는 숨김 */
+    animation: fadeInOut 3.5s forwards; /* 3.5초 동안 나타났다가 사라짐 */
+}
+
+.success-message {
+    background-color: #e6ffed; /* 더 연한 녹색 배경 */
+    color: #28a745; /* 더 진한 녹색 텍스트 */
+    border: 1px solid #d4edda;
+}
+
+.error-message {
+    background-color: #ffe6e6; /* 더 연한 붉은색 배경 */
+    color: #dc3545; /* 더 진한 붉은색 텍스트 */
+    border: 1px solid #f5c6cb;
+}
+
+/* 모달 오버레이 */
+.fixed.inset-0 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6); /* 더 어두운 배경 */
+    z-index: 9999;
+}
+
+/* 모달 컨텐츠 박스 */
+.bg-white.p-8.rounded-lg.shadow-xl.w-full.max-w-sm.mx-auto.relative.text-center {
+    padding: 35px;
+    border-radius: 15px; /* 더 둥근 모서리 */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25); /* 더 강한 그림자 */
+}
+
+.bg-white.p-8 h5 {
+    color: #2c3e50;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.bg-white.p-8 p {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+.bg-white.p-8 .flex.justify-center.gap-4 {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* 버튼 간격 조정 */
+}
+
+.bg-white.p-8 button {
+    padding: 12px 25px;
+    font-size: 1em;
+    border-radius: 6px;
+    min-width: unset; /* 모달 버튼의 최소 너비 재설정 */
+}
+
+/* 링크 스타일 */
+a {
+    color: #6a1b9a; /* 보라색 계열 */
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+    font-weight: 500;
+}
+
+a:hover {
+    color: #4a148c;
+    text-decoration: underline;
+}
+
+/* 수평선 스타일 */
+hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ddd, transparent); /* 부드러운 그라데이션 라인 */
+    margin: 50px 0; /* 마진 증가 */
+}
+
+/* 애니메이션 */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-15px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-15px); }
+}
+
+
+/* --- 반응형 디자인 --- */
+@media (max-width: 768px) {
+    .container {
+        margin: 30px 15px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 30px;
+    }
+
+    h2 {
+        font-size: 1.8em;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    section {
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+
+    label {
+        font-size: 1em;
+    }
+
+    input, select, button {
+        padding: 12px 15px;
+        font-size: 0.95em;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 1em;
+        width: 100%; /* 모바일에서 버튼 100% 너비 */
+        margin-top: 10px;
+    }
+
+    .gender-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .message-area {
+        padding: 15px;
+        font-size: 0.95em;
+    }
+
+    .bg-white.p-8.rounded-lg.shadow-xl.w-full.max-w-sm.mx-auto.relative.text-center {
+        padding: 25px;
+        margin: 0 15px;
+    }
+
+    .bg-white.p-8 h5 {
+        font-size: 1.5em;
+    }
+
+    .bg-white.p-8 p {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 20px 10px;
+        padding: 20px;
+        border-radius: 0; /* 모바일에서는 모서리 둥글기 제거 */
+        box-shadow: none; /* 모바일에서는 그림자 제거 */
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 25px;
+    }
+
+    h2 {
+        font-size: 1.6em;
+        margin-top: 25px;
+        margin-bottom: 18px;
+    }
+
+    section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    form div {
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-size: 0.9em;
+        margin-bottom: 8px;
+    }
+
+    input, select, button {
+        padding: 10px;
+        font-size: 0.9em;
+        border-radius: 6px;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 0.95em;
+        border-radius: 6px;
+    }
+
+    .gender-options {
+        gap: 10px;
+    }
+
+    .message-area {
+        padding: 12px;
+        font-size: 0.85em;
+    }
+
+    .bg-white.p-8.rounded-lg.shadow-xl.w-full.max-w-sm.mx-auto.relative.text-center {
+        padding: 20px;
+    }
+
+    .bg-white.p-8 button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>마이페이지</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<style>
+		/* 기본적인 마이페이지 스타일 */
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+			background-color: #f4f4f4;
+		}
+
+		.container {
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			max-width: 600px;
+			margin: 20px auto;
+		}
+
+		h1,
+		h2 {
+			color: #333;
+			border-bottom: 2px solid #eee;
+			padding-bottom: 10px;
+			margin-bottom: 20px;
+		}
+
+		p {
+			margin-bottom: 10px;
+		}
+
+		label {
+			display: inline-block;
+			/* 라벨도 인라인 블록으로 만들어 같은 줄에 위치 */
+			margin-right: 15px;
+			/* 각 옵션 간 간격 */
+			margin-left: 0;
+			/* 기존 margin-right가 덮어씌워질 수 있으니 초기화 */
+			margin-bottom: 5px;
+			font-weight: bold;
+
+		}
+
+		input[type="text"],
+		input[type="email"],
+		input[type="password"],
+		input[type="date"] {
+			width: calc(100% - 22px);
+			padding: 10px;
+			margin-bottom: 15px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+
+		button {
+			background-color: #007bff;
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+			margin-right: 10px;
+		}
+
+		button:hover {
+			background-color: #0056b3;
+		}
+
+		.gender-options {
+			margin-bottom: 15px;
+		}
+
+		.gender-options input[type="radio"] {
+			margin-right: 5px;
+		}
+
+		.delete-account-btn {
+			background-color: #dc3545;
+		}
+
+		.delete-account-btn:hover {
+			background-color: #c82333;
+		}
+
+		.success-message {
+			color: green;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+
+		.error-message {
+			color: red;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>마이페이지</h1>
+<div>
+	<a href="/main">메인페이지</a>
+	<a href="/my_playlists">내 플레이 리스트</a>
+</div>
+		<h2>내 정보</h2>
+		<p><strong>아이디:</strong> <span th:text="${user.username}"></span></p>
+		<p><strong>이메일:</strong> <span th:text="${user.email}"></span></p>
+		<p><strong>닉네임:</strong> <span th:text="${user.nickname}"></span></p>
+		<p><strong>생년월일:</strong> <span th:text="${user.birth}"></span></p>
+		<p><strong>성별:</strong> <span th:text="${user.gender}"></span></p>
+		<p><strong>가입일:</strong> <span th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+		<p><strong>최종 수정일:</strong> <span
+				th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span>
+		</p>
+		<p><strong>역할:</strong> <span th:text="${user.roles}"></span></p>
+		<p><strong>프로필 사진:</strong> <span th:if="${user.picture}" th:text="${user.picture}"></span>
+			<span th:unless="${user.picture}">설정되지 않음</span>
+			<a href="/profile">프로필 사진 변경</a>
+		</p>
+
+		<div id="message-area" class="message-area"></div>
+
+		<hr>
+
+		<h2>정보 수정</h2>
+		<form id="updateProfileForm">
+			<div>
+				<label for="updateNickname">닉네임:</label>
+				<input type="text" id="updateNickname" name="nickname" th:value="${user.nickname}" required>
+			</div>
+			<div>
+				<label for="updateBirth">생년월일:</label>
+				<input type="date" id="updateBirth" name="birth" th:value="${user.birth}" required>
+			</div>
+			<div class="gender-options">
+				<label>성별:</label>
+				<input type="radio" id="genderMale" name="gender" value="MALE" th:checked="${user.gender == 'MALE'}">
+				<label for="genderMale">남성</label>
+				<input type="radio" id="genderFemale" name="gender" value="FEMALE"
+					th:checked="${user.gender == 'FEMALE'}">
+				<label for="genderFemale">여성</label>
+			</div>
+			<button type="submit">정보 수정</button>
+		</form>
+
+		<hr>
+
+		<h2>비밀번호 변경</h2>
+		<form id="changePasswordForm">
+			<div>
+				<label for="oldPassword">현재 비밀번호:</label>
+				<input type="password" id="oldPassword" name="oldPassword" required>
+			</div>
+			<div>
+				<label for="newPassword">새 비밀번호:</label>
+				<input type="password" id="newPassword" name="newPassword" required>
+			</div>
+			<div>
+				<label for="confirmNewPassword">새 비밀번호 확인:</label>
+				<input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+			</div>
+			<button type="submit">비밀번호 변경</button>
+		</form>
+
+		<hr>
+
+		<h2>계정 관리</h2>
+		<p>더 이상 서비스를 이용하지 않으시려면 계정을 삭제할 수 있습니다.</p>
+		<button id="deleteAccountButton" class="delete-account-btn">회원 탈퇴</button>
+
+		<hr>
+
+		<p><a href="/forgot-password">비밀번호를 잊으셨나요? (비밀번호 찾기)</a></p>
+
+	</div>
+	
+	<script th:src="@{/js/mypage.js}"></script>
+</body>
+
+</html>

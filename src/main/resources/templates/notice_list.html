@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항/이벤트 목록</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .notice-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .notice-item:last-child {
+            border-bottom: none;
+        }
+        .notice-item a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .notice-item a:hover {
+            color: #007bff;
+        }
+        .notice-meta {
+            font-size: 0.85em;
+            color: #777;
+            margin-top: 5px;
+        }
+        .pagination-controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* 작은 화면에서 버튼이 줄바꿈 되도록 */
+        }
+        .pagination-controls button {
+            margin: 5px;
+            padding: 8px 15px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #007bff;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .pagination-controls button:hover:not(.active) {
+            background-color: #e9f5ff;
+        }
+        .pagination-controls button.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        .pagination-controls button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            border-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .filter-buttons button {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                공지사항 & 이벤트
+            </div>
+            <div class="card-body">
+                <div class="filter-buttons mb-3">
+                    <button class="btn btn-outline-primary" data-type="">전체</button>
+                    <button class="btn btn-outline-primary" data-type="NOTICE">공지사항</button>
+                    <button class="btn btn-outline-primary" data-type="EVENT">이벤트</button>
+                </div>
+				<div th:if="${session.user != null and session.user.roles.contains('ROLE_ADMIN')}">
+					<a href="/notice_admin">관리자 페이지</a>
+				</div>
+				<div>
+					<a href="/main" class="btn btn-outline-primary">메인으로</a>
+				</div>
+				
+                <div id="notice-list" class="list-group list-group-flush">
+                    <p class="text-center text-muted">로딩 중...</p>
+                </div>
+
+                <nav class="pagination-controls mt-4" aria-label="Page navigation">
+                    </nav>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPage = 0; // 현재 페이지 (백엔드는 0부터 시작)
+        const pageSize = 10; // 페이지당 항목 수
+        let currentType = ''; // 현재 필터링 타입 ('', 'NOTICE', 'EVENT')
+
+        // 목록을 가져오는 비동기 함수
+        async function fetchNotices(page = 0, type = '') {
+            currentPage = page;
+            currentType = type;
+
+            const listContainer = document.getElementById('notice-list');
+            const paginationContainer = document.querySelector('.pagination-controls');
+            listContainer.innerHTML = '<p class="text-center text-muted">데이터를 불러오는 중...</p>';
+            paginationContainer.innerHTML = ''; // 페이지네이션 초기화
+
+            try {
+                let url = `/api/notices?page=${page}&size=${pageSize}&sort=createdAt,desc`;
+                if (type) {
+                    url += `&type=${type}`;
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const pageData = await response.json(); // 백엔드에서 Page<NoticeDto> 객체로 반환
+
+                renderNoticeList(pageData.content); // 실제 데이터 목록 렌더링
+                renderPaginationControls(pageData); // 페이지네이션 컨트롤 렌더링
+
+            } catch (error) {
+                console.error('Error fetching notices:', error);
+                listContainer.innerHTML = '<p class="text-center text-danger">공지사항을 불러오는 데 실패했습니다.</p>';
+                paginationContainer.innerHTML = '';
+            }
+        }
+
+        // 공지사항 목록 렌더링 함수
+        function renderNoticeList(notices) {
+            const listContainer = document.getElementById('notice-list');
+            listContainer.innerHTML = ''; // 기존 목록 초기화
+
+            if (notices && notices.length > 0) {
+                notices.forEach(notice => {
+                    const noticeItem = document.createElement('div');
+                    noticeItem.className = 'notice-item';
+                    noticeItem.innerHTML = `
+                       <a href="/notice_detail?id=${notice.id}">${notice.title}</a>
+                        <div class="notice-meta">
+                            <span>${notice.type === 'NOTICE' ? '공지' : '이벤트'}</span> |
+                            <span>${notice.authorUsername}</span> |
+                            <span>조회수 ${notice.viewCount}</span> |
+                            <span>${new Date(notice.createdAt).toLocaleDateString()}</span>
+                        </div>
+                    `;
+                    listContainer.appendChild(noticeItem);
+                });
+            } else {
+                listContainer.innerHTML = '<p class="text-center text-muted">등록된 공지사항이 없습니다.</p>';
+            }
+        }
+
+        // 페이지네이션 컨트롤 렌더링 함수
+        function renderPaginationControls(pageData) {
+            const paginationContainer = document.querySelector('.pagination-controls');
+            paginationContainer.innerHTML = ''; // 기존 컨트롤 초기화
+
+            const { number, totalPages, first, last } = pageData; // 현재 페이지, 총 페이지 수, 첫/마지막 페이지 여부
+
+            // 이전 페이지 버튼
+            const prevButton = document.createElement('button');
+            prevButton.textContent = '이전';
+            prevButton.disabled = first;
+            prevButton.onclick = () => fetchNotices(number - 1, currentType);
+            paginationContainer.appendChild(prevButton);
+
+            // 페이지 번호 버튼들 (예: 현재 페이지 주변 5개만 표시)
+            const startPage = Math.max(0, number - 2);
+            const endPage = Math.min(totalPages - 1, number + 2);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i + 1; // 사용자에게는 1부터 시작하는 페이지 번호 표시
+                pageButton.className = (i === number) ? 'active' : ''; // 현재 페이지 강조
+                pageButton.onclick = () => fetchNotices(i, currentType);
+                paginationContainer.appendChild(pageButton);
+            }
+
+            // 다음 페이지 버튼
+            const nextButton = document.createElement('button');
+            nextButton.textContent = '다음';
+            nextButton.disabled = last;
+            nextButton.onclick = () => fetchNotices(number + 1, currentType);
+            paginationContainer.appendChild(nextButton);
+        }
+
+        // 필터링 버튼 이벤트 리스너 설정
+        document.querySelectorAll('.filter-buttons button').forEach(button => {
+            button.addEventListener('click', () => {
+                const type = button.dataset.type; // data-type 속성 값 가져오기
+                fetchNotices(0, type); // 필터링 시 첫 페이지부터 다시 로드
+            });
+        });
+
+        // 페이지 로드 시 공지사항 목록 가져오기
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchNotices(currentPage, currentType);
+        });
+    </script>
+</body>
+</html>
