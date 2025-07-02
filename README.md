@@ -1,5 +1,103 @@
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=bsh-ui)](https://github.com/anuraghazra/github-readme-stats)
+/* 기본 스타일 */
+body {
+    font-family: 'Segoe UI', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
 
+/* 헤더 스타일 */
+.readme-header {
+    background-color: #282c34;
+    color: #61dafb;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 5px solid #61dafb;
+    margin-bottom: 30px;
+}
+
+.readme-header h1 {
+    font-size: 3em;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.readme-header p {
+    font-size: 1.2em;
+    opacity: 0.8;
+}
+
+/* 메인 콘텐츠 섹션 스타일 */
+.readme-section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+    padding: 30px;
+    border-left: 5px solid #4CAF50; /* 각 섹션에 포인트를 줍니다. */
+}
+
+.readme-section h2 {
+    color: #2c3e50;
+    font-size: 2em;
+    margin-top: 0;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.readme-section h3 {
+    color: #34495e;
+    font-size: 1.5em;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.readme-section ul {
+    list-style-type: disc;
+    padding-left: 25px;
+}
+
+.readme-section ul li {
+    margin-bottom: 10px;
+}
+
+.readme-section code {
+    background-color: #e0e0e0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+}
+
+/* 링크 스타일 */
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* 푸터 스타일 */
+.readme-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    color: #777;
+    font-size: 0.9em;
+}
+
+/* 강조 텍스트 */
+strong {
+    color: #4CAF50; /* 강조되는 키워드 색상 */
+}
 ListenIt 프로젝트
 🎧 프로젝트 소개
 ListenIt은 사용자에게 개인화된 음악 콘텐츠 재생 환경을 제공하고, 효율적인 음악 검색 및 관리가 가능한 웹 서비스입니다. 사용자 인증, 계정 관리, 그리고 커뮤니티 기능을 통해 사용자들이 음악을 듣고 공유하며 소통할 수 있는 플랫폼을 목표로 합니다.
