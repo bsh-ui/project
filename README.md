@@ -1,141 +1,214 @@
-🎵 ListenIt: 당신의 개인화된 음악 웹 서비스
-ListenIt은 개인화된 음악 콘텐츠 재생, 사용자 인증 및 계정 관리를 제공하는 강력한 웹 서비스입니다. React 프론트엔드와 Spring Boot 백엔드의 완벽한 통합으로 풍부하고 직관적인 사용자 경험을 선사합니다. Apache Solr 기반의 효율적인 음악 검색과 철저한 계정 보안 및 관리 기능을 통해 안정적인 서비스 운영을 목표로 합니다.
+<h1 align="center" style="font-size: 3em;">🎵 ListenIt</h1>
+<h3 align="center"><em>당신의 개인화된 음악 웹 서비스</em></h3>
 
-🚀 프로젝트 개요 및 주요 기능
-💡 프로젝트 목표
-사용자 인증, 계정 관리 및 개인화된 음악 콘텐츠 재생 기능을 제공하는 웹 서비스 백엔드 구축.
+<p align="center">
+  <img src="[대표 이미지 URL]" alt="ListenIt Cover" width="70%">
+</p>
 
-효율적인 음악 검색을 위한 Apache Solr 연동 및 고도화.
+<p align="center">
+  <strong>React + Spring Boot 기반 음악 스트리밍 & 검색 플랫폼</strong><br>
+  <strong>개발 기간:</strong> 2025.06.02 ~ 2025.06.10 &nbsp;|&nbsp;
+  <strong>Repository:</strong> <a href="https://github.com/bsh-ui/project">GitHub 링크</a>
+</p>
 
-안정적인 서비스 운영을 위한 계정 보안 및 관리 기능 구현.
+<hr>
 
-React 프론트엔드와 Spring Boot 백엔드 간의 안정적인 연동 및 통합 구현.
+## 💡 프로젝트 개요
 
-✨ ListenIt의 핵심 기능
-사용자 인증 및 계정 보안: 폼 로그인, 소셜 로그인(Google, Kakao, Naver), 강화된 회원가입 절차, 프로필 관리, 그리고 계정 잠금 시스템.
+<p align="justify">
+<strong>ListenIt</strong>은 개인화된 음악 콘텐츠 재생, 사용자 인증 및 계정 관리를 제공하는 강력한 웹 서비스입니다.<br>
+React 프론트엔드와 Spring Boot 백엔드의 완벽한 통합으로 풍부하고 직관적인 사용자 경험을 선사합니다.<br>
+Apache Solr 기반의 효율적인 음악 검색과 철저한 계정 보안 및 관리 기능을 통해 안정적인 서비스 운영을 목표로 합니다.
+</p>
 
-음악 콘텐츠 관리 & 스트리밍: MP3 파일 업로드, 메타데이터 관리, 안정적인 웹 스트리밍 재생.
+<table width="100%" cellspacing="0" cellpadding="10">
+<tr>
+<td width="50%" valign="top">
 
-나만의 플레이리스트: 생성, 관리, 맞춤형 편집이 가능한 개인화된 음악 플레이리스트.
+### 🎯 주요 개발 목표
 
-지능형 검색 (Powered by Solr): 음악, 가사, 앨범 아트를 아우르는 빠르고 정확한 Apache Solr 기반 전문 검색.
+- 사용자 인증 및 계정 관리 백엔드 구축
+- Apache Solr 기반 음악 검색 기능 고도화
+- 소셜 로그인 및 보안 시스템 통합
+- React-Backend 안정적인 통신 설계
 
-커뮤니티 & 소통: 게시판(CRUD), 댓글, 평점, 좋아요/싫어요 기능을 통한 사용자 간 활발한 상호작용.
+</td>
+<td width="50%" valign="top">
 
-관리자 전용 기능: 효율적인 공지사항 관리(CRUD).
+### 🚀 핵심 기능 요약
 
-프론트-백엔드 완벽 연동: RESTful API 통신을 통한 React와 Spring Boot 간의 안정적인 통합.
+- 폼 로그인 + OAuth2(Google, Naver, Kakao)
+- 음악 업로드 + 스트리밍
+- 플레이리스트 생성/관리
+- Solr 검색 (가사/앨범 이미지 포함)
+- 커뮤니티 기능 (게시글/댓글/좋아요 등)
+- 관리자 공지사항 CRUD
 
-🛠️ 기술 스택 및 개발 환경
-프로젝트 저장소: https://github.com/bsh-ui/project
+</td>
+</tr>
+</table>
 
-개발 기간: 2025.06.02 ~ 2025.06.10
+---
 
-운영체제: Windows 10
+## 🛠 기술 스택
 
-주요 언어: Java 17, JSP & Servlet, JavaScript, jQuery, HTML5, CSS3
+<table>
+<tr>
+<td><strong>📦 Backend</strong></td>
+<td>
+<img src="https://img.shields.io/badge/Java-17-blue" />
+<img src="https://img.shields.io/badge/SpringBoot-2.7.13-green" />
+<img src="https://img.shields.io/badge/MyBatis-2.3.1-orange" />
+<img src="https://img.shields.io/badge/JWT-0.11.5-yellow" />
+<img src="https://img.shields.io/badge/Lombok-%23FFA500.svg" />
+<img src="https://img.shields.io/badge/Tomcat-9.0-blue" />
+</td>
+</tr>
+<tr>
+<td><strong>🎨 Frontend</strong></td>
+<td>
+<img src="https://img.shields.io/badge/React-18-blue" />
+<img src="https://img.shields.io/badge/JavaScript-ES6-yellow" />
+<img src="https://img.shields.io/badge/jQuery-3.6.0-blue" />
+<img src="https://img.shields.io/badge/CSS3-%231572B6.svg" />
+<img src="https://img.shields.io/badge/HTML5-%23E34F26.svg" />
+</td>
+</tr>
+<tr>
+<td><strong>🔐 Auth & API</strong></td>
+<td>
+<img src="https://img.shields.io/badge/OAuth2-Naver-green" />
+<img src="https://img.shields.io/badge/OAuth2-Kakao-yellow" />
+<img src="https://img.shields.io/badge/OAuth2-Google-blue" />
+<img src="https://img.shields.io/badge/RESTful-API-red" />
+<img src="https://img.shields.io/badge/Ajax-%230078D4.svg" />
+</td>
+</tr>
+<tr>
+<td><strong>🗃 DB & Tools</strong></td>
+<td>
+<img src="https://img.shields.io/badge/MySQL-8.0-blue" />
+<img src="https://img.shields.io/badge/STS-Eclipse-green" />
+<img src="https://img.shields.io/badge/VisualStudioCode-blue" />
+<img src="https://img.shields.io/badge/GitHub-VersionControl-black" />
+</td>
+</tr>
+</table>
 
-프레임워크 / 라이브러리:
+---
 
-Spring Boot 2.7.13, Spring Security, Spring Boot Starter OAuth2 Client
+## 📌 주요 기능 상세
 
-MyBatis 2.3.1, Lombok, Thumbnailator, log4jdbc-log4j2, JJWT 0.11.5, JSTL
+### 🔗 React-Spring 연동
 
-데이터베이스: MySQL
+<p align="justify">
+React 프론트엔드와 Spring Boot 백엔드를 RESTful API로 연동하여, 로그인 요청 시 백엔드 인증 API와 통신하고, JWT 토큰을 localStorage에 저장하여 세션을 유지합니다.
+</p>
 
-개발 도구: Eclipse, Visual Studio Code, STS (Spring Tool Suite)
+---
 
-WAS (웹 애플리케이션 서버): Apache Tomcat
+### 🔐 사용자 인증 및 계정 관리
 
-협업 도구: GitHub
+- 폼 로그인 및 소셜 로그인 연동 (Google, Kakao, Naver)
+- 인증 실패 시 메시지 처리 및 자동 잠금 (5회 실패 시)
+- 회원가입 시 비밀번호 유효성 검사 + 중복 체크
+- 프로필 조회 및 수정, 비밀번호 변경, 회원 탈퇴
+- 로그인/음악 재생 기록 저장 및 조회
 
-API 연동: Naver OAuth2 API, Google OAuth2 API, Kakao OAuth2 API, RESTful API, Ajax
+---
 
-🚀 구현 기능 상세
-🔗 React-Spring 통합
-React 기반 사용자 인터페이스와 Spring Boot 백엔드(STS 환경) 간의 RESTful API 통신을 성공적으로 연동했습니다.
+### 🎵 음악 콘텐츠 및 재생
 
-프론트엔드 로그인 요청 시 백엔드의 인증 API와 연동하여 정상적인 로그인 처리 및 토큰 기반 인증을 구현했습니다.
+- MP3 업로드 및 메타데이터(title, artist, album) 저장
+- 웹 스트리밍 방식으로 음악 재생 (보안 문제 해결)
+- 음악 상세 페이지에서 플레이리스트에 추가 가능
 
-🔐 사용자 인증 및 계정 관리
-다중 로그인 지원: 폼 로그인(아이디/비밀번호) 및 Google, Kakao, Naver 소셜 로그인 연동.
+---
 
-안전한 세션 관리: 로그인 성공 시 인증 토큰을 localStorage에 저장하여 클라이언트 측 세션 관리, 실패 시 적절한 에러 메시지 제공.
+### ⏯ 플레이리스트 기능
 
-편의 기능: 'Remember Me' (아이디 저장).
+- 새로운 플레이리스트 생성
+- 음악 추가/삭제, 이름 변경, 상세 목록 관리
 
-철저한 회원가입: 아이디 중복 확인, 비밀번호 유효성 검사(강도, 형식), 비밀번호 확인 토글 기능.
+---
 
-종합 프로필 관리: 개인 정보 조회 및 수정, 비밀번호 변경, 회원 탈퇴.
+### 🔍 Solr 검색 기능
 
-활동 기록 조회: 사용자의 로그인 기록, 음악 청취 기록 등 주요 활동 내역 저장 및 조회.
+- Apache Solr 9.8.1 설치 및 음악 정보 색인
+- 가사 + 앨범 이미지까지 검색 포함
+- 빠르고 정밀한 전문 검색(Full-text)
 
-강력한 보안: 비밀번호 실패 5회 시 자동 계정 잠금, 관리자 권한으로 계정 비활성화/정지 처리.
+---
 
-🧪 개발/테스트 편의 기능
-개발 및 시연을 위한 자동 로그인 테스트 계정 로직 구현 (로그인 과정 없이 메인 페이지 접근).
+### 🗣️ 커뮤니티 기능
 
-📢 공지사항 기능
-관리자 권한을 가진 사용자가 공지 목록 조회, 상세 내용 확인, 새로운 공지사항 생성, 수정, 삭제가 가능한 완전한 CRUD 기능 구현.
+- 게시글 생성/수정/삭제/조회 (CRUD)
+- 댓글 작성, 좋아요/싫어요, 평점 기능 구현
 
-🎶 음악 콘텐츠 관리 및 재생
-MP3 파일 업로드: 음악 파일 및 제목, 아티스트, 앨범 등 메타데이터 함께 저장.
+---
 
-안정적인 스트리밍: 웹에서 스트리밍 방식으로 음악 재생 기능 완비, 파일 경로 문제 및 CSP, JavaScript 오류 해결.
+### 📢 공지사항 기능
 
-🎨 메인 페이지 UI 구성
-직관적인 인터페이스: 마우스 오버 시 나타나고 사라지는 드롭다운 메뉴 구현.
+- 관리자 전용 공지사항 CRUD 구현
 
-시각적 배치: 최신 음악, 추천 음악, 인기 플레이리스트 등 핵심 콘텐츠를 블록 형태로 구성.
+---
 
-권한 기반 재생: 로그인한 사용자(소셜 로그인 포함)만 음악 재생 가능하도록 권한 처리.
+### 🧪 개발 및 테스트 환경
 
-⏯️ 플레이리스트 기능
-개별 음악 상세 페이지에서 음악 정보 확인, 기존 플레이리스트에 추가, 새로운 플레이리스트 생성.
+- 로그인 없이 메인에 접근 가능한 테스트 계정 지원
 
-생성된 플레이리스트의 음악 추가/삭제, 목록 수정, 제목 변경 등 세부 관리 및 상세 내용 조회.
+---
 
-🔍 Solr 연동 및 검색
-빠르고 정확한 음악 검색을 위해 Apache Solr (v9.8.1) 서버 설치 및 실행 환경 구성.
+## 👨‍💻 나의 역할
 
-데이터베이스 음악 정보를 Solr에 **색인(indexing)**하여 강력한 전문 검색(Full-Text Search) 구현.
+- React 프론트와 Spring Boot 백엔드 연동
+- JWT 기반 로그인 처리 및 OAuth2 소셜 로그인 구현
+- 사용자 인증 및 프로필 관리 시스템 개발
+- 음악 업로드 + 스트리밍 기능 완성
+- Solr 설치 및 색인 처리 + 검색 API 구현
+- 플레이리스트 생성/관리 + UI 구성
+- 커뮤니티 기능 개발 (게시판, 댓글, 평점)
 
-검색 결과에 음악 가사 및 앨범 이미지 함께 표시.
+---
 
-🗣️ 커뮤니티 기능
-게시글의 생성, 수정, 삭제, 상세 보기 기능을 포함한 게시판 기능.
+## 💭 프로젝트 회고
 
-각 게시글에 대한 댓글, 평점, 좋아요/싫어요 기능을 구현하여 사용자 간 상호작용 지원.
+<p align="justify">
+이번 ListenIt 프로젝트를 통해 단독으로 백엔드부터 프론트와의 연동, 보안 처리, 검색 최적화, UI 구성까지 풀스택 역량을 종합적으로 다룰 수 있었습니다.<br><br>
+특히 OAuth2 로그인 통합과 JWT 인증 흐름 구현은 실무에서의 사용자 인증 시스템 이해도를 크게 높이는 계기가 되었고, Apache Solr를 통한 검색 최적화는 새로운 기술 도입 및 연동 경험을 넓혀주었습니다.<br><br>
+단순한 기능 구현을 넘어 사용자 경험과 시스템 안정성을 고려한 설계 역량을 키울 수 있었던 값진 프로젝트였습니다.
+</p>
 
-🧑‍💻 나의 역할
-ListenIt 프로젝트에서 저는 다음과 같은 핵심적인 역할을 수행하며 풀스택 개발 역량을 발휘했습니다:
+---
 
-React-Spring 통합 & 로그인 연동: 프론트엔드와 백엔드 API 연동 구축 및 로그인 기능 통합.
+## 📸 주요 화면 미리보기
 
-사용자 인증 및 계정 관리 시스템 개발: 폼/소셜 로그인, JWT 기반 토큰 처리, 회원가입, 프로필 관리, 계정 보안 기능 구현.
+<table>
+<tr>
+<td align="center">
+<strong>🔐 로그인 및 계정 잠금 화면</strong><br>
+<img src="[이미지 URL]" width="400">
+</td>
+<td align="center">
+<strong>🎶 음악 상세 & 플레이리스트 추가</strong><br>
+<img src="[이미지 URL]" width="400">
+</td>
+</tr>
+<tr>
+<td align="center">
+<strong>🎨 메인 페이지 (React 연동)</strong><br>
+<img src="[이미지 URL]" width="400">
+</td>
+<td align="center">
+<strong>🗣 커뮤니티 게시판</strong><br>
+<img src="[이미지 URL]" width="400">
+</td>
+</tr>
+</table>
 
-음악 콘텐츠 관리 & 재생 시스템 구축: MP3 파일 업로드, 메타데이터 관리, 음악 재생 기능, 웹 보안 문제 해결.
+---
 
-Apache Solr 기반 검색 기능 구현: Solr 설치 및 연동, 음악 콘텐츠 색인 및 검색 기능 개발, 검색 결과 개선.
-
-메인 페이지 및 플레이리스트 UI/기능 개발: 메인 페이지 UI 구성 및 플레이리스트 관리 기능 개발.
-
-커뮤니티 게시판 기능 개발: 게시글 CRUD 및 댓글/평점/좋아요/싫어요 기능 구현 참여.
-
-💭 프로젝트 참여 소감
-ListenIt 프로젝트는 기획부터 React 기반 프론트엔드와 Spring Boot 백엔드 연동까지 전 과정을 단독으로 수행하며 풀스택 개발 역량을 크게 확장할 수 있었던 소중한 경험입니다. 특히, 다양한 소셜 로그인 연동과 JWT 기반의 인증 시스템을 구축하며 사용자 인증 및 보안에 대한 심도 깊은 이해를 얻었습니다.
-
-Apache Solr를 도입하여 대용량 음악 콘텐츠에 대한 효율적인 검색 기능을 구현한 것은 저에게 새로운 기술 스택을 습득하고 실제 서비스에 적용해 보는 중요한 기회였습니다. 또한, 음악 재생 및 플레이리스트 관리, 그리고 커뮤니티 기능 구현을 통해 백엔드와 프론트엔드 연동 역량 및 서비스 기획 능력을 한층 더 향상시켰습니다. 이 프로젝트는 사용자의 편의성과 시스템의 안정성을 동시에 고려하는 실무 개발 능력을 강화하는 데 크게 기여했으며, 앞으로의 개발 여정에 큰 밑거름이 될 것입니다.
-
-📸 주요 화면 미리보기
-아래는 ListenIt 서비스의 주요 기능이 구현된 화면입니다. (이곳에 실제 스크린샷 이미지를 추가해주세요!)
-
-1. 로그인 화면 및 5회 실패 시 계정 잠금
-폼 로그인, 소셜 로그인 옵션, 그리고 계정 보안을 위한 잠금 기능이 적용된 화면입니다.
-
-2. 음악 상세 페이지: 음악 재생 및 플레이리스트 추가
-음악 정보를 확인하고, 스트리밍으로 음악을 재생하며, 플레이리스트에 추가할 수 있는 화면입니다.
-
-3. React와 연동된 메인 화면
-React 기반의 사용자 친화적인 UI와 Spring Boot 백엔드가 연동된 ListenIt의 메인 페이지입니다.
-
+<p align="center">
+  ⓒ 2025 ListenIt Project by [Your Name] &nbsp;|&nbsp; Powered by Java ☕ + Spring 🌿 + React ⚛️<br>
+  <em>“당신의 음악, 당신의 방식으로.”</em>
+</p>
