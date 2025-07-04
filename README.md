@@ -209,6 +209,6 @@ React 프론트엔드와 Spring Boot 백엔드를 RESTful API로 연동하여, �
 ---
 
 <p align="center">
-  ⓒ 2025 ListenIt Project by [Your Name] &nbsp;|&nbsp; Powered by Java ☕ + Spring 🌿 + React ⚛️<br>
+  ⓒ 2025 ListenIt Project by [박 성 훈] &nbsp;|&nbsp; Powered by Java ☕ + Spring 🌿 + React ⚛️<br>
   <em>“당신의 음악, 당신의 방식으로.”</em>
 </p>
