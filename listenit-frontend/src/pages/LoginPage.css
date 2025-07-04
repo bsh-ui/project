@@ -1,0 +1,171 @@
+/* src/pages/LoginPage.css */
+.login-page {
+    padding: 30px;
+    max-width: 450px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.login-title {
+    font-size: 2.8rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-size: 1rem;
+    color: #34495e;
+    margin-bottom: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-input {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+}
+
+.login-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 15px;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+.login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+.error-message {
+    color: #dc3545;
+    background-color: #ffebee;
+    border: 1px solid #d32f2f;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.signup-link {
+    margin-top: 30px;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.signup-link p {
+    margin-bottom: 8px;
+}
+
+.link-text {
+    color: #007bff;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.link-text:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .login-page {
+        padding: 20px;
+        margin: 30px auto;
+        max-width: 90%;
+    }
+
+    .login-title {
+        font-size: 2.2rem;
+    }
+
+    .form-input {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
+    .login-button {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-page {
+        margin: 20px 15px;
+        padding: 15px;
+    }
+
+    .login-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+
+    .form-input {
+        font-size: 0.9rem;
+    }
+
+    .login-button {
+        font-size: 0.95rem;
+        padding: 10px 15px;
+    }
+
+    .signup-link {
+        font-size: 0.85rem;
+    }
+}

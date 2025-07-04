@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 사진 관리</title>
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+    <div class="container">
+        <h1>프로필 사진 관리</h1>
+
+        <div class="profile-section">
+            <h2>내 프로필</h2>
+            <p>사용자 아이디: <span id="username">Loading...</span></p>
+            <p>이메일: <span id="email">Loading...</span></p>
+
+            <h3>프로필 사진</h3>
+            <div class="profile-picture-area">
+                <img id="profileImage" src="/images/default_profile.png" alt="프로필 이미지">
+                <p id="noPictureMessage" style="display: none;">현재 프로필 사진이 없습니다.</p>
+            </div>
+            
+            <div class="picture-actions">
+                <input type="file" id="imageUpload" accept="image/*">
+                <button id="uploadButton">사진 업로드</button>
+                <button id="deleteButton" style="display: none;">사진 삭제</button>
+            </div>
+            <p id="message" class="status-message"></p>
+        </div>
+        
+        <button id="logoutButton" class="logout-button">로그아웃</button>
+    </div>
+
+    <script src="/js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+/* src/pages/NotFoundPage.css */
+.not-found-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh; /* 뷰포트 높이의 60% 이상 차지 */
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin: 50px auto;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+}
+
+.not-found-title {
+    font-size: 6rem;
+    color: #dc3545; /* 빨간색 계열 */
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.not-found-message {
+    font-size: 1.8rem;
+    color: #343a40;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.go-home-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.go-home-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .not-found-title {
+        font-size: 4rem;
+    }
+    .not-found-message {
+        font-size: 1.4rem;
+    }
+    .go-home-button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .not-found-title {
+        font-size: 3rem;
+    }
+    .not-found-message {
+        font-size: 1.2rem;
+    }
+    .go-home-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>음악 목록</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+		rel="stylesheet">
+	<style>
+		/* 일반적인 페이지 스타일 (main.html에 통합된 CSS와 중복될 수 있으므로 필요에 따라 main.html의 style 태그로 옮기거나 CSS 파일로 분리 고려) */
+		body {
+			background-color: #f8f9fa;
+			/* 연한 회색 배경 */
+		}
+
+		.container {
+			max-width: 960px;
+			/* 컨텐츠 최대 너비 */
+			margin-top: 50px;
+			/* 상단 여백 */
+		}
+
+		.music-card {
+			margin-bottom: 20px;
+			/* 각 음악 카드 아래 여백 */
+			box-shadow: 0 4px 8px rgba(0, 0, 0, .05);
+			/* 카드 그림자 효과 */
+			border-radius: 8px;
+			/* 둥근 모서리 */
+			overflow: hidden;
+			/* 이미지 둥근 모서리 적용을 위해 */
+			height: 100%;
+			/* 카드 높이 균일하게 */
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+			transition: transform 0.2s ease-in-out;
+		}
+
+		.music-card img {
+			width: 100%;
+			height: 180px;
+			/* 앨범 커버 이미지 높이 고정 */
+			object-fit: cover;
+			/* 이미지가 잘리지 않고 채워지도록 */
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+		}
+
+		.music-card-body {
+			padding: 15px;
+			flex-grow: 1;
+			/* 카드 내용이 남은 공간을 차지하도록 */
+			display: flex;
+			flex-direction: column;
+		}
+
+		.music-title {
+			font-size: 1.1em;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		.music-artist,
+		.music-album {
+			font-size: 0.9em;
+			color: #6c757d;
+			/* 회색 텍스트 */
+			margin-bottom: 3px;
+		}
+
+		.play-button-container {
+			text-align: center;
+			margin-top: auto;
+			/* 버튼을 카드 하단에 정렬 */
+		}
+
+		.play-button-container .btn {
+			width: 100%;
+			font-size: 1.1em;
+			padding: 8px 0;
+		}
+
+		.music-info-link {
+			text-decoration: none;
+			/* 링크 밑줄 제거 */
+			color: inherit;
+			/* 부모 요소의 글자색 상속 */
+			display: block;
+			/* 블록 요소로 만들어 클릭 영역 확장 */
+			flex-grow: 1;
+			/* flex item으로 전체 높이 차지 */
+			padding-bottom: 10px;
+			/* 아래쪽 여백 */
+		}
+	</style>
+</head>
+
+<body>
+	<div th:fragment="musicListContent">
+		<div class="container">
+			<div class="d-flex justify-content-end mb-3">
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPlaylistModal">
+					<i class="bi bi-plus-circle"></i> 새 플레이리스트 생성
+				</button>
+			</div>
+
+			<div class="card">
+				<div class="card-header">음악 목록</div>
+				<div class="card-body">
+					<p class="text-center text-muted" id="loading-message">음악을 불러오는 중...</p>
+					<div class="row" id="public-music-list-container">
+						</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="createPlaylistModal" tabindex="-1" aria-labelledby="createPlaylistModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="createPlaylistModalLabel">새 플레이리스트 생성</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="createPlaylistForm">
+							<div class="mb-3">
+								<label for="playlistTitle" class="form-label">플레이리스트 제목</label>
+								<input type="text" class="form-control" id="playlistTitle" required maxlength="100">
+							</div>
+							<div class="mb-3">
+								<label for="playlistDescription" class="form-label">설명 (선택 사항)</label>
+								<textarea class="form-control" id="playlistDescription" rows="3" maxlength="500"></textarea>
+							</div>
+							<button type="submit" class="btn btn-primary">생성하기</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+/* src/App.css */
+
+/* 전체 페이지의 기본 폰트, 배경색 등을 설정 */
+body {
+  font-family: 'Inter', sans-serif; /* Inter 폰트 사용 (필요시) */
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa; /* 연한 배경색 */
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 모든 요소에 box-sizing: border-box 적용 (레이아웃 관리 용이) */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 메인 콘텐츠 영역에 대한 기본 스타일 */
+/* PostListPage, PostDetailPage, PostFormPage 등에서 사용될 수 있는 컨테이너 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* 링크 기본 스타일 제거 (컴포넌트별로 재정의되도록) */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 버튼 기본 스타일 재정의 (컴포넌트별로 재정의되도록) */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+/* 기본적인 flexbox 설정 (필요시) */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 기타 전역적으로 필요한 스타일 (현재는 추가할 내용 없음) */
+

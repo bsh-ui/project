@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.profile-section {
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.profile-picture-area {
+    margin: 20px 0;
+}
+
+#profileImage {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /* 원형 이미지 */
+    object-fit: cover; /* 이미지가 잘리지 않게 비율 유지 */
+    border: 3px solid #ddd;
+    background-color: #eee;
+    display: block; /* 중앙 정렬을 위해 */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
+.picture-actions {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+input[type="file"] {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    width: calc(100% - 20px); /* 패딩 고려 */
+    max-width: 300px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    max-width: 300px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button#deleteButton {
+    background-color: #dc3545;
+}
+
+button#deleteButton:hover {
+    background-color: #c82333;
+}
+
+.logout-button {
+    margin-top: 20px;
+    background-color: #6c757d;
+}
+
+.logout-button:hover {
+    background-color: #5a6268;
+}
+
+.status-message {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.status-message.success {
+    color: green;
+}
+
+.status-message.error {
+    color: red;
+}

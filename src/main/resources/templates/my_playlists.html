@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 플레이리스트</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 960px;
+            margin-top: 50px;
+        }
+
+        .playlist-card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .05);
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .playlist-card-body {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .playlist-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .playlist-description {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 10px;
+            flex-grow: 1;
+        }
+
+        .playlist-meta {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .playlist-meta span.badge {
+            font-size: 0.75em;
+            padding: 0.3em 0.6em;
+            margin-left: 5px;
+        }
+        /* 음악 목록 아이템 스타일 */
+        .music-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            position: relative; /* 삭제 버튼 위치 조정을 위해 */
+        }
+        .music-item:last-child {
+            border-bottom: none;
+        }
+        .music-item .music-info {
+            flex-grow: 1;
+        }
+        .music-item .music-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 2px;
+        }
+        .music-item .music-artist {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .music-item .music-duration {
+            font-size: 0.85em;
+            color: #888;
+            margin-left: 10px;
+        }
+        /* 커버 이미지가 있다면 추가 */
+        .music-item img.cover-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+        .music-item .music-actions {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        .music-item .remove-music-btn {
+            margin-left: 10px; /* 재생 버튼과 간격 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="mb-4">내 플레이리스트</h2>
+
+        <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPlaylistModal">
+                <i class="bi bi-plus-circle"></i> 새 플레이리스트 생성
+            </button>
+			<a href="/" class="link-back">뒤로가기</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">나의 플레이리스트 목록</div>
+            <div class="card-body">
+                <p class="text-center text-muted" id="loading-message">플레이리스트를 불러오는 중...</p>
+                <div class="row" id="my-playlist-list-container">
+                    </div>
+                <p class="text-center text-muted" id="no-playlist-message" style="display: none;">생성된 플레이리스트가 없습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createPlaylistModal" tabindex="-1" aria-labelledby="createPlaylistModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPlaylistModalLabel">새 플레이리스트 생성</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <a href="/profile" class="ms-auto me-2"> <button type="button" class="btn btn-outline-secondary btn-sm">내 프로필</button>
+					</a>
+                </div>
+                <div class="modal-body">
+                    <form id="createPlaylistForm">
+                        <div class="mb-3">
+                            <label for="playlistTitle" class="form-label">플레이리스트 제목</label>
+                            <input type="text" class="form-control" id="playlistTitle" required maxlength="100">
+                        </div>
+                        <div class="mb-3">
+                            <label for="playlistDescription" class="form-label">설명 (선택 사항)</label>
+                            <textarea class="form-control" id="playlistDescription" rows="3" maxlength="500"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">생성하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editPlaylistModal" tabindex="-1" aria-labelledby="editPlaylistModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPlaylistModalLabel">플레이리스트 수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPlaylistForm">
+                        <input type="hidden" id="editPlaylistId">
+                        <div class="mb-3">
+                            <label for="editPlaylistTitle" class="form-label">제목</label>
+                            <input type="text" class="form-control" id="editPlaylistTitle" required maxlength="100">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPlaylistDescription" class="form-label">설명</label>
+                            <textarea class="form-control" id="editPlaylistDescription" rows="3" maxlength="500"></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="editPlaylistIsPublic">
+                            <label class="form-check-label" for="editPlaylistIsPublic">
+                                공개 플레이리스트
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">수정 완료</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewPlaylistModal" tabindex="-1" aria-labelledby="viewPlaylistModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewPlaylistModalLabel">플레이리스트 상세</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="currentPlaylistId"> <h4 id="viewPlaylistTitle" class="mb-2"></h4>
+                    <p id="viewPlaylistDescription" class="text-muted"></p>
+                    <hr>
+                    <h5>포함된 음악</h5>
+                    <div id="viewPlaylistMusicList" class="list-group mb-3">
+                        <p class="text-center text-muted" id="noMusicMessage" style="display: none;">이 플레이리스트에 음악이 없습니다.</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <h6>음악 추가</h6>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="musicIdToAdd" placeholder="추가할 음악 ID 입력" aria-label="추가할 음악 ID">
+                            <button class="btn btn-primary" type="button" id="addMusicBtn">음악 추가</button>
+                        </div>
+                        <small class="form-text text-muted">음악 ID는 검색 페이지 등에서 확인할 수 있습니다.</small>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_BASE_URL = '/api/playlists';
+            const playlistContainer = document.getElementById('my-playlist-list-container');
+            const loadingMessage = document.getElementById('loading-message');
+            const noPlaylistMessage = document.getElementById('no-playlist-message');
+
+            // 모달 요소들
+            const createPlaylistForm = document.getElementById('createPlaylistForm');
+            const createPlaylistModalElement = document.getElementById('createPlaylistModal');
+            const editPlaylistModalElement = document.getElementById('editPlaylistModal');
+            const viewPlaylistModalElement = document.getElementById('viewPlaylistModal');
+
+            // Bootstrap Modal 객체
+            let createPlaylistModal = null;
+            let editPlaylistModal = null;
+            let viewPlaylistModal = null;
+
+            if (createPlaylistModalElement) createPlaylistModal = new bootstrap.Modal(createPlaylistModalElement);
+            if (editPlaylistModalElement) editPlaylistModal = new bootstrap.Modal(editPlaylistModalElement);
+            if (viewPlaylistModalElement) viewPlaylistModal = new bootstrap.Modal(viewPlaylistModalElement);
+
+            // JWT 토큰 가져오는 함수 (예시, 실제 구현에 따라 달라질 수 있음)
+            // localStorage, sessionStorage 등에서 토큰을 가져오는 방식으로 구현 필요
+            function getJwtToken() {
+                // TODO: 실제 JWT 토큰을 가져오는 로직 구현
+                // 예: localStorage.getItem('jwtToken');
+                return localStorage.getItem('jwtToken'); // 또는 다른 저장소
+            }
+
+            // fetch 요청 시 JWT 토큰 포함하는 헬퍼 함수
+            async function authenticatedFetch(url, options = {}) {
+                const token = getJwtToken();
+                if (token) {
+                    options.headers = {
+                        ...options.headers,
+                        'Authorization': `Bearer ${token}`
+                    };
+                }
+                const response = await fetch(url, options);
+                // 401 Unauthorized 또는 403 Forbidden 응답 처리
+                if (response.status === 401 || response.status === 403) {
+                    alert('로그인이 필요하거나 권한이 없습니다. 로그인 페이지로 이동합니다.');
+                    window.location.href = '/custom_login'; // 로그인 페이지로 리다이렉트
+                    throw new Error('Unauthorized or Forbidden'); // 오류 발생시켜 이후 코드 실행 중단
+                }
+                return response;
+            }
+
+
+            // 플레이리스트 생성 폼 제출 이벤트 리스너
+            if (createPlaylistForm && createPlaylistModal) {
+                createPlaylistForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+
+                    const title = document.getElementById('playlistTitle').value;
+                    const description = document.getElementById('playlistDescription').value;
+
+                    if (!title.trim()) {
+                        alert('플레이리스트 제목은 필수입니다.');
+                        return;
+                    }
+
+                    try {
+                        const response = await authenticatedFetch(API_BASE_URL, { // POST /api/playlists
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ title, description })
+                        });
+
+                        if (response.ok) {
+                            const newPlaylist = await response.json();
+                            alert(`플레이리스트 '${newPlaylist.title}'이(가) 생성되었습니다.`);
+                            createPlaylistModal.hide(); // 모달 닫기
+                            createPlaylistForm.reset(); // 폼 초기화
+                            fetchMyPlaylists(); // 플레이리스트 목록 새로고침
+                        } else if (response.status === 400) {
+                            const errorData = await response.json();
+                            alert('플레이리스트 생성 실패: ' + (errorData.message || '제목을 확인해주세요.'));
+                        } else {
+                            alert('플레이리스트 생성 중 오류가 발생했습니다.');
+                            console.error('플레이리스트 생성 실패:', response.status, await response.text());
+                        }
+                    } catch (error) {
+                        console.error('플레이리스트 생성 요청 중 에러:', error);
+                        if (error.message !== 'Unauthorized or Forbidden') { // Already handled auth errors
+                            alert('네트워크 오류 또는 서버 응답 문제 발생.');
+                        }
+                    }
+                });
+            }
+
+
+            // 내 플레이리스트 목록을 불러오는 함수
+            async function fetchMyPlaylists() {
+                loadingMessage.style.display = 'block'; // 로딩 메시지 표시
+                noPlaylistMessage.style.display = 'none'; // '플레이리스트 없음' 메시지 숨김
+                playlistContainer.innerHTML = ''; // 기존 목록 초기화
+
+                try {
+                    const response = await authenticatedFetch(`${API_BASE_URL}/my`); // GET /api/playlists/my
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const playlists = await response.json();
+
+                    if (playlists && playlists.length > 0) {
+                        loadingMessage.style.display = 'none'; // 로딩 메시지 숨김
+                        playlists.forEach(playlist => {
+                            const colDiv = document.createElement('div');
+                            colDiv.className = 'col-md-4 col-sm-6'; // 한 줄에 3개씩 (md) 또는 2개씩 (sm)
+                            colDiv.innerHTML = `
+                                <div class="card playlist-card">
+                                    <div class="card-body playlist-card-body">
+                                        <h5 class="playlist-title">${playlist.title}</h5>
+                                        <p class="playlist-description">${playlist.description || '설명 없음'}</p>
+                                        <div class="playlist-meta">
+                                            <p>생성자: ${playlist.userNickname}</p>
+                                            <p>생성일: ${new Date(playlist.createdAt).toLocaleDateString()}</p>
+                                            <p>공개여부:
+                                                <span class="badge ${playlist.isPublic ? 'bg-success' : 'bg-warning'}">
+                                                    ${playlist.isPublic ? '공개' : '비공개'}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-info view-playlist-btn" data-id="${playlist.id}" data-bs-toggle="modal" data-bs-target="#viewPlaylistModal">
+                                                <i class="bi bi-list-music"></i> 음악 보기
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary edit-playlist-btn" data-id="${playlist.id}" data-title="${playlist.title}" data-description="${playlist.description || ''}" data-ispublic="${playlist.isPublic}">
+                                                <i class="bi bi-pencil"></i> 수정
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-playlist-btn" data-id="${playlist.id}">
+                                                <i class="bi bi-trash"></i> 삭제
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            playlistContainer.appendChild(colDiv);
+                        });
+
+                        // 모든 버튼이 생성된 후에 이벤트 리스너를 한 번에 추가
+                        addPlaylistButtonListeners();
+
+                    } else {
+                        loadingMessage.style.display = 'none';
+                        noPlaylistMessage.style.display = 'block'; // '플레이리스트 없음' 메시지 표시
+                    }
+                } catch (error) {
+                    console.error('내 플레이리스트 목록을 불러오는 데 실패했습니다:', error);
+                    if (error.message !== 'Unauthorized or Forbidden') {
+                         loadingMessage.style.display = 'none';
+                         playlistContainer.innerHTML = '<p class="text-danger text-center">플레이리스트 목록을 불러오는 데 실패했습니다.</p>';
+                    }
+                }
+            }
+
+            // 플레이리스트 버튼에 이벤트 리스너 추가 함수
+            function addPlaylistButtonListeners() {
+                // 음악 보기 버튼
+                document.querySelectorAll('.view-playlist-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const playlistId = this.dataset.id;
+                        // 플레이리스트 상세 모달을 띄우고 데이터 로드
+                        loadPlaylistDetail(playlistId);
+                    });
+                });
+
+                // 수정 버튼
+                document.querySelectorAll('.edit-playlist-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const playlistId = this.dataset.id;
+                        const title = this.dataset.title;
+                        const description = this.dataset.description;
+                        const isPublic = this.dataset.ispublic === 'true'; // 문자열을 boolean으로 변환
+
+                        // 수정 모달에 데이터 채워넣기
+                        document.getElementById('editPlaylistId').value = playlistId;
+                        document.getElementById('editPlaylistTitle').value = title;
+                        document.getElementById('editPlaylistDescription').value = description;
+                        document.getElementById('editPlaylistIsPublic').checked = isPublic;
+
+                        // 수정 모달 띄우기
+                        if (editPlaylistModal) {
+                            editPlaylistModal.show();
+                        } else {
+                            console.error("editPlaylistModal이 초기화되지 않았습니다.");
+                        }
+                    });
+                });
+
+                // 삭제 버튼
+                document.querySelectorAll('.delete-playlist-btn').forEach(button => {
+                    button.addEventListener('click', async function() {
+                        const playlistId = this.dataset.id;
+                        if (confirm('정말로 이 플레이리스트를 삭제하시겠습니까?')) {
+                            try {
+                                const response = await authenticatedFetch(`${API_BASE_URL}/${playlistId}`, {
+                                    method: 'DELETE'
+                                });
+
+                                if (response.status === 204) { // 204 No Content
+                                    alert('플레이리스트가 성공적으로 삭제되었습니다.');
+                                    fetchMyPlaylists(); // 목록 새로고침
+                                } else if (response.status === 403) {
+                                    alert('이 플레이리스트를 삭제할 권한이 없습니다.');
+                                } else if (response.status === 404) {
+                                     alert('삭제하려는 플레이리스트를 찾을 수 없습니다.');
+                                } else {
+                                    const errorData = await response.json();
+                                    alert('플레이리스트 삭제 실패: ' + (errorData.message || '알 수 없는 오류'));
+                                    console.error('삭제 실패:', response.status, await response.text());
+                                }
+                            } catch (error) {
+                                console.error('플레이리스트 삭제 요청 중 에러:', error);
+                                if (error.message !== 'Unauthorized or Forbidden') {
+                                    alert('네트워크 오류 또는 서버 응답 문제 발생.');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            // 플레이리스트 수정 폼 제출 이벤트 리스너
+            const editPlaylistForm = document.getElementById('editPlaylistForm');
+            if (editPlaylistForm && editPlaylistModal) {
+                editPlaylistForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+
+                    const playlistId = document.getElementById('editPlaylistId').value;
+                    const title = document.getElementById('editPlaylistTitle').value;
+                    const description = document.getElementById('editPlaylistDescription').value;
+                    const isPublic = document.getElementById('editPlaylistIsPublic').checked;
+
+                    if (!title.trim()) {
+                        alert('플레이리스트 제목은 필수입니다.');
+                        return;
+                    }
+
+                    try {
+                        const response = await authenticatedFetch(`${API_BASE_URL}/${playlistId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ title, description, isPublic })
+                        });
+
+                        if (response.ok) {
+                            const updatedPlaylist = await response.json();
+                            alert(`플레이리스트 '${updatedPlaylist.title}'이(가) 성공적으로 수정되었습니다.`);
+                            editPlaylistModal.hide(); // 모달 닫기
+                            fetchMyPlaylists(); // 목록 새로고침
+                        } else if (response.status === 403) {
+                            alert('이 플레이리스트를 수정할 권한이 없습니다.');
+                        } else if (response.status === 404) {
+                            alert('수정하려는 플레이리스트를 찾을 수 없습니다.');
+                        } else if (response.status === 400) {
+                            const errorData = await response.json();
+                            alert('플레이리스트 수정 실패: ' + (errorData.message || '제목을 확인해주세요.'));
+                        } else {
+                            alert('플레이리스트 수정 중 오류가 발생했습니다.');
+                            console.error('수정 실패:', response.status, await response.text());
+                        }
+                    } catch (error) {
+                        console.error('플레이리스트 수정 요청 중 에러:', error);
+                        if (error.message !== 'Unauthorized or Forbidden') {
+                            alert('네트워크 오류 또는 서버 응답 문제 발생.');
+                        }
+                    }
+                });
+            }
+
+            // 플레이리스트 상세 정보 로드 및 모달 표시 함수
+            async function loadPlaylistDetail(playlistId) {
+                const viewPlaylistTitle = document.getElementById('viewPlaylistTitle');
+                const viewPlaylistDescription = document.getElementById('viewPlaylistDescription');
+                const viewPlaylistMusicList = document.getElementById('viewPlaylistMusicList');
+                const noMusicMessage = document.getElementById('noMusicMessage');
+                const currentPlaylistIdInput = document.getElementById('currentPlaylistId'); // 숨겨진 input
+
+                // 현재 조회 중인 플레이리스트 ID를 저장 (음악 추가/삭제 시 사용)
+                currentPlaylistIdInput.value = playlistId;
+
+                viewPlaylistTitle.textContent = '불러오는 중...';
+                viewPlaylistDescription.textContent = '';
+                viewPlaylistMusicList.innerHTML = ''; // 기존 음악 목록 초기화
+                noMusicMessage.style.display = 'none'; // 메시지 숨김
+
+                try {
+                    const response = await authenticatedFetch(`${API_BASE_URL}/${playlistId}`); // GET /api/playlists/{id}
+                    if (response.ok) {
+                        const playlist = await response.json();
+                        viewPlaylistTitle.textContent = playlist.title;
+                        viewPlaylistDescription.textContent = playlist.description || '설명 없음';
+
+                        if (playlist.musics && playlist.musics.length > 0) {
+                            noMusicMessage.style.display = 'none'; // 음악이 있으면 메시지 숨김
+                            playlist.musics.forEach(music => {
+                                const musicItem = document.createElement('div');
+                                musicItem.className = 'list-group-item d-flex align-items-center music-item';
+                                musicItem.dataset.musicId = music.id; // 삭제를 위해 musicId 저장
+
+                                // 커버 이미지 (옵션)
+                                if (music.coverImagePath) {
+                                    const coverImg = document.createElement('img');
+                                    coverImg.className = 'cover-image me-3';
+                                    coverImg.src = music.coverImagePath;
+                                    coverImg.alt = '앨범 커버';
+                                    musicItem.appendChild(coverImg);
+                                }
+
+                                const musicInfo = document.createElement('div');
+                                musicInfo.className = 'music-info';
+                                musicInfo.innerHTML = `
+                                    <div class="music-title">${music.title}</div>
+                                    <div class="music-artist">${music.artist}</div>
+                                `;
+                                musicItem.appendChild(musicInfo);
+
+                                // 음악 액션 (재생, 삭제 버튼) 컨테이너
+                                const musicActions = document.createElement('div');
+                                musicActions.className = 'music-actions';
+
+                                // 재생 시간 (옵션)
+                                if (music.duration) {
+                                    const durationSpan = document.createElement('span');
+                                    durationSpan.className = 'music-duration';
+                                    durationSpan.textContent = formatDuration(music.duration);
+                                    musicActions.appendChild(durationSpan);
+                                }
+                                
+                                // 재생 버튼 (추가 가능)
+                                const playButton = document.createElement('button');
+                                playButton.className = 'btn btn-sm btn-outline-primary ms-3';
+                                playButton.innerHTML = '<i class="bi bi-play-fill"></i>';
+                                playButton.title = '음악 재생';
+                                // playButton.onclick = () => playMusic(music.id); // 재생 함수 호출
+                                musicActions.appendChild(playButton);
+
+                                // 삭제 버튼
+                                const removeButton = document.createElement('button');
+                                removeButton.className = 'btn btn-sm btn-outline-danger remove-music-btn';
+                                removeButton.innerHTML = '<i class="bi bi-trash"></i>';
+                                removeButton.title = '음악 삭제';
+                                removeButton.dataset.playlistId = playlist.id;
+                                removeButton.dataset.musicId = music.id;
+                                removeButton.addEventListener('click', async function() {
+                                    if (confirm(`'${music.title}'을(를) 플레이리스트에서 삭제하시겠습니까?`)) {
+                                        await removeMusicFromPlaylist(playlist.id, music.id);
+                                    }
+                                });
+                                musicActions.appendChild(removeButton);
+
+                                musicItem.appendChild(musicActions);
+                                viewPlaylistMusicList.appendChild(musicItem);
+                            });
+                        } else {
+                            // 음악이 없을 경우 메시지 표시
+                            noMusicMessage.style.display = 'block';
+                        }
+
+                    } else if (response.status === 404) {
+                        alert('플레이리스트를 찾을 수 없습니다.');
+                        viewPlaylistTitle.textContent = '플레이리스트를 찾을 수 없습니다.';
+                    } else {
+                        alert('플레이리스트 상세 정보를 불러오는 데 실패했습니다.');
+                        viewPlaylistTitle.textContent = '오류 발생';
+                        console.error('상세 정보 불러오기 실패:', response.status, await response.text());
+                    }
+                } catch (error) {
+                    console.error('플레이리스트 상세 정보 요청 중 에러:', error);
+                    if (error.message !== 'Unauthorized or Forbidden') {
+                        alert('네트워크 오류 또는 서버 응답 문제 발생.');
+                    }
+                    viewPlaylistTitle.textContent = '오류 발생';
+                } finally {
+                    if (viewPlaylistModal) viewPlaylistModal.show();
+                }
+            }
+
+            // duration (초)을 "분:초" 형식으로 포맷팅하는 헬퍼 함수
+            function formatDuration(seconds) {
+                if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
+                    return '0:00';
+                }
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+            }
+
+            // --- 음악 추가/삭제 함수 ---
+
+            // 음악 추가 버튼 클릭 이벤트
+            const addMusicBtn = document.getElementById('addMusicBtn');
+            if (addMusicBtn) {
+                addMusicBtn.addEventListener('click', async function() {
+                    const playlistId = document.getElementById('currentPlaylistId').value;
+                    const musicId = document.getElementById('musicIdToAdd').value;
+
+                    if (!playlistId) {
+                        alert('플레이리스트를 먼저 선택해주세요.');
+                        return;
+                    }
+                    if (!musicId || isNaN(musicId) || parseInt(musicId) <= 0) {
+                        alert('유효한 음악 ID를 입력해주세요.');
+                        return;
+                    }
+
+                    await addMusicToPlaylist(playlistId, musicId);
+                });
+            }
+
+            // 플레이리스트에 음악을 추가하는 함수
+            async function addMusicToPlaylist(playlistId, musicId) {
+                try {
+                    const response = await authenticatedFetch(`${API_BASE_URL}/${playlistId}/music/${musicId}`, {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        alert('음악이 플레이리스트에 추가되었습니다.');
+                        document.getElementById('musicIdToAdd').value = ''; // 입력 필드 초기화
+                        // 음악 목록 새로고침
+                        await loadPlaylistDetail(playlistId);
+                    } else if (response.status === 400) {
+                        const errorData = await response.json();
+                        alert('음악 추가 실패: ' + (errorData.message || '잘못된 요청입니다.'));
+                    } else if (response.status === 403) {
+                        alert('이 플레이리스트에 음악을 추가할 권한이 없습니다.');
+                    } else if (response.status === 404) {
+                        alert('플레이리스트 또는 음악을 찾을 수 없습니다.');
+                    } else {
+                        alert('음악 추가 중 오류가 발생했습니다.');
+                        console.error('음악 추가 실패:', response.status, await response.text());
+                    }
+                } catch (error) {
+                    console.error('음악 추가 요청 중 에러:', error);
+                    if (error.message !== 'Unauthorized or Forbidden') {
+                        alert('네트워크 오류 또는 서버 응답 문제 발생.');
+                    }
+                }
+            }
+
+            // 플레이리스트에서 음악을 삭제하는 함수
+            async function removeMusicFromPlaylist(playlistId, musicId) {
+                try {
+                    const response = await authenticatedFetch(`${API_BASE_URL}/${playlistId}/music/${musicId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.status === 204) { // 204 No Content for successful deletion
+                        alert('음악이 플레이리스트에서 삭제되었습니다.');
+                        // 음악 목록 새로고침
+                        await loadPlaylistDetail(playlistId);
+                    } else if (response.status === 403) {
+                        alert('이 플레이리스트에서 음악을 삭제할 권한이 없습니다.');
+                    } else if (response.status === 404) {
+                        alert('플레이리스트 또는 음악을 찾을 수 없습니다.');
+                    } else {
+                        const errorData = await response.json();
+                        alert('음악 삭제 실패: ' + (errorData.message || '알 수 없는 오류'));
+                        console.error('음악 삭제 실패:', response.status, await response.text());
+                    }
+                } catch (error) {
+                    console.error('음악 삭제 요청 중 에러:', error);
+                    if (error.message !== 'Unauthorized or Forbidden') {
+                        alert('네트워크 오류 또는 서버 응답 문제 발생.');
+                    }
+                }
+            }
+
+            // 페이지 로드 시 내 플레이리스트 목록 불러오기
+            fetchMyPlaylists();
+        });
+    </script>
+</body>
+
+</html>
