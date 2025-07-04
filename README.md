@@ -59,6 +59,8 @@ Apache Solr 기반의 효율적인 음악 검색과 철저한 계정 보안 및 
 <img src="https://img.shields.io/badge/Java-17-blue" />
 <img src="https://img.shields.io/badge/SpringBoot-2.7.13-green" />
 <img src="https://img.shields.io/badge/MyBatis-2.3.1-orange" />
+<img src="https://img.shields.io/badge/JPA-Hibernate-blue" />
+<img src="https://img.shields.io/badge/SpringDataJPA-2.7.x-important" />
 <img src="https://img.shields.io/badge/JWT-0.11.5-yellow" />
 <img src="https://img.shields.io/badge/Lombok-%23FFA500.svg" />
 <img src="https://img.shields.io/badge/Tomcat-9.0-blue" />
