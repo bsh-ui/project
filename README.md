@@ -205,6 +205,11 @@ React 프론트엔드와 Spring Boot 백엔드를 RESTful API로 연동하여, �
 <strong>🗣 커뮤니티 게시판</strong><br>
 <img src="[이미지 URL]" width="400">
 </td>
+  <td align="center">
+<strong>📩 비밀번호 재설정 이메일</strong><br>
+<img src="[이미지 URL]" width="400">
+</td>
+
 </tr>
 </table>
 
