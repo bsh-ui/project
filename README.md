@@ -1,8 +1,8 @@
-<h1 align="center" style="font-size: 3em;">🎵 ListenIt</h1>
-<h3 align="center"><em>당신의 개인화된 음악 웹 서비스</em></h3>
+ 🎵 ListenIt MAGAZINE
+### Vol.1 - The Sound of Tomorrow
 
 <p align="center">
-  <img src="https://github.com/bsh-ui/project/blob/Listenlt/images/ListenIt%20Cover.png?raw=true" alt="ListenIt Cover" width="300px" height="450px" >
+  <img src="https://github.com/bsh-ui/project/blob/Listenlt/images/ListenIt%20Cover.png?raw=true" alt="ListenIt Cover" width="300px" height="450px" >
 </p>
 
 <p align="center">
@@ -11,7 +11,17 @@
   <strong>Repository:</strong> <a href="https://github.com/bsh-ui/project">GitHub 링크</a>
 </p>
 
-<hr>
+---
+
+## 🌟 Quick Summary for Reviewers (📌 HR 핵심 요약)
+
+- 🎯 **목표**: 개인화된 음악 스트리밍 + 검색 플랫폼 구축
+- 🔐 **인증**: 폼 + Google/Naver/Kakao OAuth2, JWT
+- 🎵 **기능**: 음악 업로드/스트리밍, 플레이리스트 관리
+- 🔍 **검색**: Apache Solr 기반 가사/앨범 검색
+- 💬 **커뮤니티**: 게시글, 댓글, 좋아요, 평점
+- 📩 **비밀번호 찾기**: 이메일 인증 기반 비밀번호 재설정
+- 🛠️ **기술스택**: Java 17, Spring Boot, React 18, MySQL, Solr 등
 
 ## 💡 프로젝트 개요
 
