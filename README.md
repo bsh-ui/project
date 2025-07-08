@@ -158,7 +158,7 @@ React 프론트엔드와 Spring Boot 백엔드 간의 완전한 통신 구조를
 
 ---
 
-## 📸 주요 화면 미리보기
+## 📸 주요 화면 
 
 <table>
 <tr>
@@ -179,6 +179,10 @@ React 프론트엔드와 Spring Boot 백엔드 간의 완전한 통신 구조를
 <td align="center">
 <strong>🗣 커뮤니티 게시판</strong><br>
 <img src="https://github.com/bsh-ui/project/blob/Listenlt/images/board_page.png?raw=true" width="400">
+</td>
+<td align="center">
+<strong>📩 비밀번호 재설정 이메일</strong><br>
+<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/password_reset_email.png?raw=true" width="400">
 </td>
 <td align="center">
 <strong>📩 비밀번호 재설정 이메일</strong><br>
