@@ -2,7 +2,7 @@
 <h3 align="center"><em>당신의 개인화된 음악 웹 서비스</em></h3>
 
 <p align="center">
-  <img src="https://github.com/bsh-ui/project/blob/Listenlt/images/ListenIt%20Cover.png?raw=true" alt="ListenIt Cover" width="100%" height="500px" >
+  <img src="https://github.com/bsh-ui/project/blob/Listenlt/images/ListenIt%20Cover.png?raw=true" alt="ListenIt Cover" width="100px" height="500px" >
 </p>
 
 <p align="center">
