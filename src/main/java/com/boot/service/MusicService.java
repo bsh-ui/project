@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+<<<<<<< HEAD
 import java.nio.file.StandardCopyOption; // 이 부분은 FileStorageService에서 처리하는 것이 일반적
+=======
+import java.nio.file.StandardCopyOption;
+>>>>>>> main
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -156,12 +160,20 @@ public class MusicService {
         // ⭐ 가사 파일 경로에서 실제 가사 내용을 읽어와 DTO에 설정 ⭐
         String lyricsContent = null;
         if (music.getLyrics() != null && !music.getLyrics().trim().isEmpty()) {
+<<<<<<< HEAD
             try {
                 lyricsContent = fileStorageService.readLyricsFile(music.getLyrics());
                 log.info("가사 파일 읽기 성공: {}", music.getLyrics());
             } catch (IOException e) {
                 log.error("가사 파일 읽기 실패: {} - {}", music.getLyrics(), e.getMessage());
                 lyricsContent = null; // 파일 읽기 실패 시 null 또는 빈 문자열로 처리
+=======
+            lyricsContent = fileStorageService.readLyricsFile(music.getLyrics());
+            // readLyricsFile이 IOException을 던지지 않고 null을 반환하므로 try-catch 제거
+            if (lyricsContent == null) {
+                log.warn("getMusicById: 가사 파일 읽기 실패 또는 파일 없음: {}", music.getLyrics());
+                lyricsContent = "[가사를 불러올 수 없습니다]"; // 또는 다른 기본값 설정
+>>>>>>> main
             }
         }
         List<String> artistList = Optional.ofNullable(music.getArtist())
@@ -215,11 +227,18 @@ public class MusicService {
                 .map(music -> {
                     String lyricsContent = null;
                     if (music.getLyrics() != null && !music.getLyrics().trim().isEmpty()) {
+<<<<<<< HEAD
                         try {
                             // ⭐ 파일 경로에서 실제 가사 내용을 읽어옴 ⭐
                             lyricsContent = fileStorageService.readLyricsFile(music.getLyrics());
                         } catch (IOException e) {
                             log.error("getAllMusic: 가사 파일 읽기 실패 for music ID {}: {}", music.getId(), e.getMessage());
+=======
+                        // FileStorageService.readLyricsFile은 이제 IOException을 던지지 않습니다.
+                        lyricsContent = fileStorageService.readLyricsFile(music.getLyrics());
+                        if (lyricsContent == null) {
+                            log.warn("getAllMusic: 가사 파일 읽기 실패 또는 파일 없음 for music ID {}: {}", music.getId(), music.getLyrics());
+>>>>>>> main
                             lyricsContent = "[가사를 불러올 수 없습니다]"; // 또는 null, 빈 문자열로 처리
                         }
                     }
@@ -227,12 +246,15 @@ public class MusicService {
                     return convertToDtoWithLyricsContent(music, lyricsContent);
                 });
     }
+<<<<<<< HEAD
 //    public Page<MusicDTO> getAllMusic(Pageable pageable) {
 //        log.info("MusicService - getAllMusic 호출 (페이지네이션)");
 //        // getAllMusic에서는 목록 조회를 위해 실제 가사 내용 대신 lyrics 필드(URL)를 포함한 DTO를 반환
 //        return musicRepository.findAll(pageable)
 //                .map(music -> MusicDTO.fromEntity(music)); // MusicDTO.fromEntity는 lyrics 필드에 URL을 매핑함
 //    }
+=======
+>>>>>>> main
 
     @Transactional(readOnly = true)
     public Resource loadMusicFileAsResource(Long musicId) {
@@ -274,7 +296,11 @@ public class MusicService {
         String updatedLyricsDbPath = existingMusic.getLyrics(); // DB에 저장될 최종 가사 파일 경로
         String lyricsContentForSolr = null; // Solr에 색인할 실제 가사 내용
 
+<<<<<<< HEAD
         try {
+=======
+        try { // 이 try-catch는 storeLyricsFile 등에서 발생할 수 있는 IOException을 위해 유지됩니다.
+>>>>>>> main
             // 1. 음악 파일 업데이트
             if (musicFile != null && !musicFile.isEmpty()) {
                 if (existingMusic.getFilePath() != null) {
@@ -299,13 +325,25 @@ public class MusicService {
                 if (existingMusic.getLyrics() != null) {
                     fileStorageService.deleteFile(existingMusic.getLyrics());
                 }
+<<<<<<< HEAD
                 updatedLyricsDbPath = fileStorageService.storeLyricsFile(musicDto.getLyrics());
+=======
+                updatedLyricsDbPath = fileStorageService.storeLyricsFile(musicDto.getLyrics()); // storeLyricsFile은 IOException을 던집니다.
+>>>>>>> main
                 lyricsContentForSolr = musicDto.getLyrics(); // Solr에 색인할 내용
                 log.info("가사 파일 업데이트 완료. newPath: {}", updatedLyricsDbPath);
             } else if (existingMusic.getLyrics() != null) {
                 // DTO에 가사가 없지만 DB에는 가사가 있을 경우: 기존 가사 파일 내용 읽어와 Solr에 재색인
+<<<<<<< HEAD
                 // (가사 내용을 지우는 경우가 아니라면, 기존 내용을 다시 색인)
                 lyricsContentForSolr = fileStorageService.readLyricsFile(existingMusic.getLyrics());
+=======
+                lyricsContentForSolr = fileStorageService.readLyricsFile(existingMusic.getLyrics()); // 이 메서드는 IOException을 던지지 않습니다.
+                if (lyricsContentForSolr == null) {
+                    log.warn("updateMusic: 기존 가사 파일 읽기 실패 또는 파일 없음 for music ID {}: {}", existingMusic.getId(), existingMusic.getLyrics());
+                    // 필요하다면 lyricsContentForSolr에 기본값을 설정할 수 있습니다.
+                }
+>>>>>>> main
             }
             // else: DTO에도 가사가 없고 DB에도 가사가 없으면 lyricsContentForSolr는 null
 
@@ -336,9 +374,18 @@ public class MusicService {
                 log.error("Failed to re-index music document in Solr after update for music ID: {}", updatedMusic.getId());
             }
             return convertToDtoWithLyricsContent(updatedMusic, lyricsContentForSolr); // DTO로 변환하여 반환
+<<<<<<< HEAD
         } catch (IOException e) {
             log.error("Music update failed", e);
             throw new RuntimeException("음악 업데이트 실패: " + e.getMessage(), e);
+=======
+        } catch (IOException e) { // storeLyricsFile이 IOException을 던지므로 이 catch는 여전히 필요합니다.
+            log.error("Music update failed", e);
+            throw new RuntimeException("음악 업데이트 실패: " + e.getMessage(), e);
+        } catch (Exception e) { // 기타 예외 처리
+            log.error("음악 업데이트 및 처리 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("음악 업데이트 실패: " + e.getMessage(), e);
+>>>>>>> main
         }
     }
 
@@ -475,4 +522,8 @@ public class MusicService {
                 .uploaderNickname(doc.getUploaderNickname())
                 .build();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> main

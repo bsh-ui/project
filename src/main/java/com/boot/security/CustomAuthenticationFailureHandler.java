@@ -67,7 +67,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
                 userRepository.save(user);
             });
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
         String finalErrorMessage = errorMessageRef.get();
         if (finalErrorMessage == null) {
             if (exception instanceof BadCredentialsException) {
@@ -81,7 +84,11 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             }
         }
         
+<<<<<<< HEAD
         // ⭐ 이 부분을 변경합니다: 쿼리 파라미터로 메시지 전달 및 리다이렉트
+=======
+        // ⭐ 쿼리 파라미터로 메시지 전달 및 리다이렉트
+>>>>>>> main
         String encodedErrorMessage = URLEncoder.encode(finalErrorMessage, StandardCharsets.UTF_8.toString());
         response.sendRedirect("/custom_login?error=true&message=" + encodedErrorMessage);
     }

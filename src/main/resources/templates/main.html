@@ -11,12 +11,22 @@
 	
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 	<script>
+<<<<<<< HEAD
 	    const API_BASE_URL = 'http://localhost:8485/api/music'; // 백엔드 API 기본 URL
 	    let currentPage = 0; // 현재 페이지 (0부터 시작)
 	    let totalPages = 0; // 총 페이지 수
 	    let currentKeyword = ''; // 현재 검색 키워드
 	    let jwtToken = ''; // 쿠키에서 가져올 JWT 토큰
 	    const pageSize = 12; // music_list에 사용되는 한 페이지 음악 개수
+=======
+	    // ⭐ API_BASE_URL을 컨트롤러의 최상위 경로까지만 설정합니다. ⭐
+	    const API_BASE_URL = 'http://localhost:8485/api'; 
+	    let currentPage = 0; 
+	    let totalPages = 0; 
+	    let currentKeyword = ''; 
+	    let jwtToken = ''; // 쿠키에서 가져올 JWT 토큰
+	    const pageSize = 12; 
+>>>>>>> main
 
 	    // JWT 토큰을 쿠키에서 가져오는 함수
 	    function getCookie(name) {
@@ -30,7 +40,11 @@
 	            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
 	            if (c.indexOf(nameEQ) === 0) {
 	                const foundValue = c.substring(nameEQ.length, c.length);
+<<<<<<< HEAD
 	                console.log(`[getCookie] Found cookie '${name}' with value: ${foundValue.substring(0, 30)}...`); // 값의 일부만 로깅
+=======
+	                console.log(`[getCookie] Found cookie '${name}' with value: ${foundValue.substring(0, 30)}...`);
+>>>>>>> main
 	                return foundValue;
 	            }
 	        }
@@ -71,20 +85,32 @@
 	            return;
 	        }
 
+<<<<<<< HEAD
 	        const url = `${API_BASE_URL}/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=10&sort=uploadDate,desc`;
+=======
+	        const url = `${API_BASE_URL}/music/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=10&sort=uploadDate,desc`;
+>>>>>>> main
 
 	        try {
 	            const headers = {
 	                'Content-Type': 'application/json'
 	            };
 	            if (jwtToken) {
+<<<<<<< HEAD
 	                headers['Authorization'] = `Bearer ${jwtToken}`; // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
+=======
+	                headers['Authorization'] = `Bearer ${jwtToken}`;
+>>>>>>> main
 	                console.log('[searchMusic] Authorization header added with JWT token. Token length:', jwtToken.length);
 	            } else {
 	                console.warn('[searchMusic] No JWT token available for search request. It might be absent or expired.');
 	            }
 
+<<<<<<< HEAD
 	            const response = await fetch(url, { headers: headers, credentials: 'include' }); // ⭐ credentials: 'include' 추가
+=======
+	            const response = await fetch(url, { headers: headers, credentials: 'include' });
+>>>>>>> main
 
 	            if (!response.ok) {
 	                if (response.status === 401 || response.status === 403) {
@@ -106,6 +132,7 @@
 	    // 검색 결과 표시 함수 (main.html의 검색 바용)
 	    function displayResults(data) {
 	        const resultsContainer = document.getElementById('resultsContainer');
+<<<<<<< HEAD
 	        resultsContainer.innerHTML = ''; // 기존 결과 지우기
 
 	        if (data.content && data.content.length > 0) {
@@ -126,6 +153,60 @@
 	        }
 
 	        // 페이지네이션 정보 업데이트
+=======
+	        resultsContainer.innerHTML = ''; 
+
+	        if (data.content && data.content.length > 0) {
+	            data.content.forEach(music => {
+	                const coverFileName = music.coverImagePath
+	                                       ? music.coverImagePath.split('/').pop().split('\\').pop()
+	                                       : null;
+
+	                    const coverImageUrl = coverFileName
+	                                       ? `${API_BASE_URL}/files/cover-image/${music.id}` 
+	                                       : '/images/default_album_cover.png'; // 기본 이미지 경로
+
+	                    const colDiv = document.createElement('div');
+	                    colDiv.className = 'col-md-3 col-sm-6';
+	                    colDiv.innerHTML = `
+	                        <div class="card music-card">
+	                            <a href="/music_detail?id=${music.id}" class="music-info-link">
+	                                <img 
+	                                    src="${coverImageUrl}" 
+	                                    class="card-img-top" 
+	                                    alt="앨범 커버"
+	                                    onerror="this.onerror=null;this.src='/images/default_album_cover.png';"> </a>
+
+	                            <div class="card-body music-card-body">
+	                                <a href="/music_detail?id=${music.id}" class="music-info-link">
+	                                    <h5 class="music-title">${music.title}</h5>
+	                                    <p class="music-artist">${Array.isArray(music.artist) ? music.artist.join(', ') : music.artist}</p>
+	                                    <p class="music-album">${music.album ? music.album : 'N/A'}</p>
+	                                    <small class="text-muted">
+	                                        ${music.duration ? '재생 시간: ' + formatDuration(music.duration) : ''}
+	                                    </small>
+	                                </a>
+
+	                                <div class="play-button-container">
+	                                    <audio id="audio-${music.id}" preload="none" style="display: none;">
+	                                        <source src="${API_BASE_URL}/music/stream/${music.id}" type="audio/mpeg">
+	                                        Your browser does not support the audio element.
+	                                    </audio>
+
+	                                    <button class="btn btn-dark" onclick="togglePlayPause(event, ${music.id}, this)">
+	                                        <i class="bi bi-play-fill"></i> 재생
+	                                    </button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    `;
+	                    resultsContainer.appendChild(colDiv);
+	                });
+	            } else {
+	                resultsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+	            }
+
+>>>>>>> main
 	        currentPage = data.pageable.pageNumber;
 	        totalPages = data.totalPages;
 	        document.getElementById('currentPageInfo').textContent = `페이지 ${currentPage + 1} / ${totalPages}`;
@@ -146,6 +227,7 @@
 	    async function checkLoginStatus() {
 	        try {
 	            const headers = {};
+<<<<<<< HEAD
 	            if (jwtToken) { // JWT 토큰이 있다면 추가
 	                headers['Authorization'] = `Bearer ${jwtToken}`; // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
 	                console.log('[checkLoginStatus] Authorization header added. Token length:', jwtToken.length);
@@ -155,13 +237,28 @@
 	            console.log('Headers sent for /api/user/me:', headers);
 
 	            const response = await fetch('/api/user/me', {
+=======
+	            if (jwtToken) {
+	                headers['Authorization'] = `Bearer ${jwtToken}`;
+	                console.log('[checkLoginStatus] Authorization header added. Token length:', jwtToken.length);
+	            } else {
+	                console.warn('[checkLoginStatus] No JWT token available for /api/auth/me. Attempting with credentials:include.');
+	            }
+	            console.log('Headers sent for /api/auth/me:', headers);
+
+	            const response = await fetch(`${API_BASE_URL}/auth/me`, { 
+>>>>>>> main
 	                method: 'GET',
 	                headers: headers,
 	                credentials: 'include',
 	                redirect: 'follow'
 	            });
 
+<<<<<<< HEAD
 	            console.log('[checkLoginStatus] Response status for /api/user/me:', response.status);
+=======
+	            console.log('[checkLoginStatus] Response status for /api/auth/me:', response.status);
+>>>>>>> main
 
 	            if (response.status === 401 || response.status === 403) {
 	                console.warn('[checkLoginStatus] User is not logged in or session expired. Status:', response.status);
@@ -178,7 +275,11 @@
 	        event.stopPropagation();
 	        console.log('[togglePlayPause] Music ID:', musicId, 'Button element:', buttonElement);
 	        const isLoggedIn = await checkLoginStatus();
+<<<<<<< HEAD
 	        console.log('[togglePlayPause] Is user logged in?', isLoggedIn); // ⭐ 디버깅 로그 ⭐
+=======
+	        console.log('[togglePlayPause] Is user logged in?', isLoggedIn);
+>>>>>>> main
 
 	        if (!isLoggedIn) {
 	            alert('스트리밍을 위해서는 로그인이 필요합니다. 로그인 페이지로 이동합니다.');
@@ -210,7 +311,11 @@
 
 	        if (audioPlayer) {
 	            try {
+<<<<<<< HEAD
 	                console.log(`[togglePlayPause] Attempting to play audio from: ${audioPlayer.src}`); // ⭐ 디버깅 로그 ⭐
+=======
+	                console.log(`[togglePlayPause] Attempting to play audio from: ${audioPlayer.src}`);
+>>>>>>> main
 	                await audioPlayer.play();
 	                console.log('[togglePlayPause] Audio playback initiated successfully.');
 	                iconElement.className = 'bi bi-pause-fill';
@@ -233,7 +338,11 @@
 	        }
 	    }
 	    
+<<<<<<< HEAD
 	    // music_list.html에서 가져온 공개용 음악 목록을 불러오는 함수
+=======
+	    // 공개용 음악 목록을 불러오는 함수
+>>>>>>> main
 	    async function fetchPublicMusicList() {
 	        const listContainer = document.getElementById('public-music-list-container');
 	        let loadingMessage = document.getElementById('loading-message');
@@ -248,6 +357,7 @@
 	            document.querySelector('.card-body')?.prepend(loadingMessage); 
 	        }
 
+<<<<<<< HEAD
 	        listContainer.innerHTML = '';
 
 	        try {
@@ -260,6 +370,25 @@
 	            }
 
 	            const response = await fetch(`${API_BASE_URL}?page=${currentPage}&size=${pageSize}&sort=uploadDate,desc`, { headers: headers, credentials: 'include' }); // ⭐ credentials: 'include' 추가
+=======
+	        listContainer.innerHTML = ''; 
+
+	        try {
+	            const headers = new Headers();
+	            headers.append('Accept', 'application/json');
+	            
+	            if (jwtToken) {
+	                headers.append('Authorization', `Bearer ${jwtToken}`);
+	                console.log('[fetchPublicMusicList] Authorization header added with JWT token. Token length:', jwtToken.length);
+	            } else {
+	                console.warn('[fetchPublicMusicList] No JWT token available for public music list request. This might be public.');
+	            }
+
+	            const response = await fetch(`${API_BASE_URL}/music?page=${currentPage}&size=${pageSize}&sort=uploadDate,desc`, { 
+	                headers: headers,
+	                credentials: 'include' 
+	            }); 
+>>>>>>> main
 
 	            if (response.status === 401 || response.status === 403) {
 	                console.warn('음악 목록을 불러오는 데 실패했습니다: 인증 또는 권한 부족. 로그인 페이지로 이동합니다.');
@@ -271,7 +400,13 @@
 	            }
 
 	            if (!response.ok) {
+<<<<<<< HEAD
 	                throw new Error(`HTTP error! status: ${response.status}`);
+=======
+	                const errorText = await response.text();
+	                console.error('API 응답이 JSON이 아닙니다:', errorText);
+	                throw new Error(`HTTP error! status: ${response.status}. 응답 내용: ${errorText.substring(0, Math.min(errorText.length, 100))}...`);
+>>>>>>> main
 	            }
 	            const pageData = await response.json();
 	            const musicList = pageData.content;
@@ -284,8 +419,13 @@
 	                                       : null;
 
 	                    const coverImageUrl = coverFileName
+<<<<<<< HEAD
 	                                       ? `http://localhost:8485/api/files/cover-image/${coverFileName}`
 	                                       : '/images/default_album_cover.png';
+=======
+	                                       ? `${API_BASE_URL}/files/cover-image/${music.id}` 
+	                                       : '/images/default_album_cover.png'; 
+>>>>>>> main
 
 	                    const colDiv = document.createElement('div');
 	                    colDiv.className = 'col-md-3 col-sm-6';
@@ -310,7 +450,11 @@
 
 	                                <div class="play-button-container">
 	                                    <audio id="audio-${music.id}" preload="none" style="display: none;">
+<<<<<<< HEAD
 	                                        <source src="${API_BASE_URL}/stream/${music.id}" type="audio/mpeg">
+=======
+	                                        <source src="${API_BASE_URL}/music/stream/${music.id}" type="audio/mpeg">
+>>>>>>> main
 	                                        Your browser does not support the audio element.
 	                                    </audio>
 
@@ -330,7 +474,11 @@
 	        } catch (error) {
 	            console.error('음악 목록을 불러오는 데 실패했습니다:', error);
 	            if (loadingMessage) loadingMessage.style.display = 'none';
+<<<<<<< HEAD
 	            listContainer.innerHTML = '<p class="text-danger text-center">음악 목록을 불러오는 데 실패했습니다.</p>';
+=======
+	            listContainer.innerHTML = `<p class="text-danger text-center">음악 목록을 불러오는 데 실패했습니다: ${error.message}</p>`;
+>>>>>>> main
 	        }
 	    }
 
@@ -359,6 +507,7 @@
 	                }
 
 	                try {
+<<<<<<< HEAD
 	                    const response = await fetch('/api/playlists', {
 	                        method: 'POST',
 	                        headers: {
@@ -366,6 +515,15 @@
 	                            'Authorization': `Bearer ${jwtToken}` // ⭐ Access Token이 HttpOnly가 아니므로 수동 추가
 	                        },
 	                        credentials: 'include', // ⭐ credentials: 'include' 추가
+=======
+	                    const response = await fetch(`${API_BASE_URL}/playlists`, {
+	                        method: 'POST',
+	                        headers: {
+	                            'Content-Type': 'application/json',
+	                            'Authorization': `Bearer ${jwtToken}`
+	                        },
+	                        credentials: 'include',
+>>>>>>> main
 	                        body: JSON.stringify({ title, description })
 	                    });
 
@@ -395,6 +553,10 @@
 	        }
 	    }
 	</script>
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 	<!--<script>
 	    const API_BASE_URL = 'http://localhost:8485/api/music'; // 백엔드 API 기본 URL
 	    let currentPage = 0; // 현재 페이지 (0부터 시작)

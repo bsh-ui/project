@@ -25,8 +25,13 @@ import java.util.UUID;
 @Slf4j
 public class FileStorageService {
 
+<<<<<<< HEAD
 	private final Path fileStorageLocation; // 파일이 저장될 실제 기본 경로 (예: C:/uploads)
 	private final String uploadBaseDir; // application.properties에서 설정한 경로 (예: uploads/)
+=======
+	private final Path fileStorageLocation;
+	private final String uploadBaseDir;
+>>>>>>> main
 
 	@Autowired
 	public FileStorageService(FileStorageProperties fileStorageProperties) {
@@ -41,6 +46,7 @@ public class FileStorageService {
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * 파일 저장 (업로드) - ⭐ 저장된 파일의 전체 절대 경로를 반환하도록 수정 ⭐
 	 * 
@@ -48,6 +54,8 @@ public class FileStorageService {
 	 * @param subDir 파일을 저장할 하위 디렉토리 (예: "music", "images", "cover-image")
 	 * @return 저장된 파일의 **전체 파일 시스템 절대 경로** 문자열 (예: "C:/path/to/your/project/uploads/music/uuid-filename.mp3")
 	 */
+=======
+>>>>>>> main
 	public String storeFile(MultipartFile file, String subDir) {
 		String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
 		log.info("파일 저장 요청: 원본 파일명={}, 서브디렉토리={}", originalFileName, subDir);
@@ -64,18 +72,28 @@ public class FileStorageService {
 			}
 			String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
 
+<<<<<<< HEAD
 			// 최종 저장될 파일의 절대 경로를 계산합니다.
 			Path targetDirectory = this.fileStorageLocation.resolve(subDir).normalize();
 			Path targetLocation = targetDirectory.resolve(uniqueFileName);
 
 			// 서브 디렉토리가 없으면 생성
 			Files.createDirectories(targetDirectory); // 파일을 포함한 경로가 아니라 디렉토리만 생성하도록 변경
+=======
+			Path targetDirectory = this.fileStorageLocation.resolve(subDir).normalize();
+			Path targetLocation = targetDirectory.resolve(uniqueFileName);
+
+			Files.createDirectories(targetDirectory);
+>>>>>>> main
 			log.info("파일 저장 타겟 경로 (절대 경로): {}", targetLocation);
 
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
+<<<<<<< HEAD
 			// ⭐ 저장된 파일의 전체 절대 경로를 반환합니다. ⭐
 			// Windows 환경에서 경로 구분자가 '\'로 나올 수 있으므로 '/'로 통일하여 저장
+=======
+>>>>>>> main
 			return targetLocation.toString().replace("\\", "/");
 		} catch (IOException ex) {
 			log.error("파일 저장 실패: 원본 파일명={}, 서브디렉토리={}, 오류={}", originalFileName, subDir, ex.getMessage(), ex);
@@ -83,6 +101,7 @@ public class FileStorageService {
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * 가사 내용을 파일로 저장하고 그 파일의 전체 절대 경로를 반환합니다.
 	 *
@@ -92,13 +111,22 @@ public class FileStorageService {
 	public String storeLyricsFile(String lyricsContent) throws IOException {
 		String subDir = "lyrics"; // 가사 파일 저장용 서브 디렉토리
 		String uniqueFileName = UUID.randomUUID().toString() + ".txt"; // 가사는 .txt 파일로 저장
+=======
+	public String storeLyricsFile(String lyricsContent) throws IOException {
+		String subDir = "lyrics";
+		String uniqueFileName = UUID.randomUUID().toString() + ".txt";
+>>>>>>> main
 
 		Path targetDirectory = this.fileStorageLocation.resolve(subDir).normalize();
 		Path targetLocation = targetDirectory.resolve(uniqueFileName);
 
 		try {
 			Files.createDirectories(targetDirectory);
+<<<<<<< HEAD
 			Files.write(targetLocation, lyricsContent.getBytes()); // 가사 내용을 바이트 배열로 변환하여 파일에 쓰기
+=======
+			Files.write(targetLocation, lyricsContent.getBytes());
+>>>>>>> main
 			log.info("가사 파일 저장 완료. 경로: {}", targetLocation);
 			return targetLocation.toString().replace("\\", "/");
 		} catch (IOException ex) {
@@ -107,6 +135,7 @@ public class FileStorageService {
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * 가사 파일의 내용을 읽어와 문자열로 반환합니다.
 	 *
@@ -115,6 +144,14 @@ public class FileStorageService {
 	 */
 	public String readLyricsFile(String fullFilePath) throws IOException {
 		log.info("가사 파일 읽기 요청: fullFilePath={}", fullFilePath);
+=======
+	public String readLyricsFile(String fullFilePath) {
+		log.info("가사 파일 읽기 요청: fullFilePath={}", fullFilePath);
+		if (fullFilePath == null || fullFilePath.isEmpty()) {
+			log.warn("가사 파일 경로가 유효하지 않습니다: {}", fullFilePath);
+			return null;
+		}
+>>>>>>> main
 		try {
 			Path filePath = Paths.get(fullFilePath).normalize();
 			if (Files.exists(filePath) && Files.isReadable(filePath)) {
@@ -122,6 +159,7 @@ public class FileStorageService {
 				log.info("가사 파일 읽기 성공: {}", filePath);
 				return content;
 			} else {
+<<<<<<< HEAD
 				log.warn("가사 파일을 찾을 수 없거나 읽을 수 없습니다: {}", fullFilePath);
 				throw new MyFileNotFoundException("가사 파일을 찾을 수 없거나 읽을 수 없습니다. " + fullFilePath);
 			}
@@ -143,6 +181,21 @@ public class FileStorageService {
 		try {
 			// DB에 저장된 fullFilePath는 이미 실제 파일 시스템의 절대 경로입니다.
 			Path file = Paths.get(fullFilePath).normalize(); // 해당 경로를 그대로 Path 객체로 변환합니다.
+=======
+				log.warn("가사 파일을 찾을 수 없거나 읽을 수 없습니다. null 반환: {}", fullFilePath);
+				return null;
+			}
+		} catch (IOException ex) {
+			log.error("가사 파일 읽기 중 오류 발생 (null 반환): fullFilePath={}, 오류={}", fullFilePath, ex.getMessage(), ex);
+			return null;
+		}
+	}
+
+	public Resource loadFileAsResource(String fullFilePath) {
+		log.info("파일 로드 요청 (DB 저장된 절대 경로): {}", fullFilePath);
+		try {
+			Path file = Paths.get(fullFilePath).normalize();
+>>>>>>> main
 			log.info("변환된 Path 객체: {}", file.toAbsolutePath().toString());
 			log.info("파일 존재 여부 (Files.exists): {}", Files.exists(file));
 			log.info("파일 읽기 가능 여부 (Files.isReadable): {}", Files.isReadable(file));
@@ -161,6 +214,7 @@ public class FileStorageService {
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * 파일 삭제 - ⭐ fullFilePath 파라미터 사용 ⭐
 	 * 
@@ -171,6 +225,11 @@ public class FileStorageService {
 		log.info("파일 삭제 요청: fullFilePath={}", fullFilePath);
 		try {
 			// DB에 저장된 fullFilePath는 이미 실제 파일 시스템의 절대 경로입니다.
+=======
+	public boolean deleteFile(String fullFilePath) {
+		log.info("파일 삭제 요청: fullFilePath={}", fullFilePath);
+		try {
+>>>>>>> main
 			Path filePathToDelete = Paths.get(fullFilePath).normalize();
 			boolean deleted = Files.deleteIfExists(filePathToDelete);
 			if (deleted) {
@@ -181,11 +240,15 @@ public class FileStorageService {
 			return deleted;
 		} catch (IOException ex) {
 			log.error("파일 삭제 중 오류 발생: fullFilePath={}, 오류={}", fullFilePath, ex.getMessage(), ex);
+<<<<<<< HEAD
 			// 파일 삭제 실패 시에도 true/false 반환보다는 예외를 던져서 명확하게 처리하도록 변경하는 것도 고려 가능
+=======
+>>>>>>> main
 			return false;
 		}
 	}
 
+<<<<<<< HEAD
 	// ⭐ getStoredFilePath 메서드는 더 이상 MusicService에서 직접 호출될 필요가 없어졌습니다. ⭐
 	// ⭐ storeFile과 storeLyricsFile이 직접 전체 절대 경로를 반환하기 때문입니다. ⭐
 	 public String getFilePath(String subDir, String uniqueFileName) {
@@ -205,3 +268,23 @@ public class FileStorageService {
 	        return null;
 	    }
 }
+=======
+	 public String getFilePath(String subDir, String uniqueFileName) {
+		 Path absolutePath = this.fileStorageLocation.resolve(subDir).resolve(uniqueFileName).normalize();
+		 String fullPathString = absolutePath.toString();
+		 log.info("DB에 저장될 절대 경로 (파일): {}", fullPathString);
+		 return fullPathString.replace("\\","/");
+		 }
+	 public String readTextFile(String filePath) throws IOException {
+		 if (filePath == null || filePath.isEmpty()) {
+			 return null;
+		 }
+		 Path path = Paths.get(filePath);
+		 if (Files.exists(path) && Files.isReadable(path)) {
+			 return Files.readString(path);
+		 }
+		 return null; 
+	 }
+}
+
+>>>>>>> main

@@ -273,6 +273,7 @@ public class UserService {
     
     @Transactional
     public String createPasswordResetTokenForUser(String email) throws MessagingException {
+<<<<<<< HEAD
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("해당 이메일로 등록된 사용자를 찾을 수 없습니다."));
 
@@ -293,6 +294,46 @@ public class UserService {
         return token;
     }
 
+=======
+        // 1. 해당 이메일로 사용자 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("해당 이메일로 등록된 사용자를 찾을 수 없습니다."));
+
+        // 2. 새로운 토큰 값과 만료일 생성
+        String newTokenValue = UUID.randomUUID().toString();
+        LocalDateTime newExpiryDate = LocalDateTime.now().plusHours(1); // 현재 시간 + 1시간
+
+        // 3. 해당 유저의 기존 비밀번호 재설정 토큰이 있는지 확인
+        Optional<PasswordResetToken> existingTokenOptional = passwordResetTokenRepository.findByUser(user);
+
+        PasswordResetToken resetToken;
+        if (existingTokenOptional.isPresent()) {
+            // 4. 기존 토큰이 있다면, 해당 객체를 가져와 새 토큰 값과 만료일로 '업데이트'
+            //    이 방식은 JPA가 트랜잭션 종료 시 변경된 엔티티를 감지하여 UPDATE 쿼리를 실행하도록 합니다.
+            resetToken = existingTokenOptional.get();
+            resetToken.setToken(newTokenValue);
+            resetToken.setExpiryDate(newExpiryDate);
+        } else {
+            // 5. 기존 토큰이 없다면, 새로운 PasswordResetToken 객체를 빌드하여 생성
+            resetToken = PasswordResetToken.builder()
+                    .token(newTokenValue)
+                    .user(user)
+                    .expiryDate(newExpiryDate)
+                    .build();
+        }
+        
+        // 6. 업데이트되거나 새로 생성된 토큰을 데이터베이스에 저장
+        //    JPA의 save 메서드는 엔티티가 영속 컨텍스트에 있고 ID(Primary Key)가 있으면 UPDATE,
+        //    없거나 새로 빌드된 엔티티면 INSERT를 수행합니다.
+        passwordResetTokenRepository.save(resetToken);
+
+        // 7. 비밀번호 재설정 이메일 발송
+        emailService.sendPasswordResetEmail(user.getEmail(), newTokenValue);
+        
+        // 8. 생성된 (혹은 업데이트된) 토큰 값 반환
+        return newTokenValue;
+    }
+>>>>>>> main
     @Transactional
     public void handleSuccessfulLogin(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
