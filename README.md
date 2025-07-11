@@ -145,30 +145,21 @@ public List<Music> searchMusic(String query) {
 
 <p align="center"> <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%8C%EC%8B%9C%ED%8C%90.png" width="450" alt="커뮤니티 화면" /> </p>
 java
- 
- 
 public void addComment(Long postId, Comment comment) {
     comment.setPostId(postId);
     commentRepository.save(comment);
 }
 7. 공지사항 관리 (관리자 전용)
 관리자 권한으로 공지사항 등록, 수정, 삭제 가능
-
 java
- 
- 
 @PreAuthorize("hasRole('ADMIN')")
 public void createNotice(Notice notice) {
     noticeRepository.save(notice);
 }
 8. 개발 편의 기능
 테스트용 자동 로그인 계정 제공
-
 로그인 및 음악 재생 활동 로그 저장 및 조회
-
 java
- 
- 
 public void saveActivityLog(Long userId, String action) {
     ActivityLog log = new ActivityLog(userId, action, LocalDateTime.now());
     activityLogRepository.save(log);
