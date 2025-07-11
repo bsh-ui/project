@@ -100,7 +100,7 @@ ListenIt은 **비교적 짧은 기간 안에 개인이 주도적으로 기획하
 ### 1. 사용자 인증 및 계정 관리: 견고한 보안과 편리한 접근의 통합
 
 <p align="center">
-  <img src="[https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="500">
+  <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="500">
   <br>
   <em>(이미지 설명: 폼 로그인, 소셜 로그인 버튼 및 계정 잠금 경고 화면)</em>
 </p>
