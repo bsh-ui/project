@@ -5,9 +5,7 @@
 
 
 <p align="center">
-
   <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/ListenIt%20Cover.png" alt="ListenIt Cover" width="300px" height="450px" >
-
 </p>
 
 
@@ -313,161 +311,49 @@ ListenIt은 **비교적 짧은 기간 안에 개인이 주도적으로 기획하
 ## 💭 프로젝트 회고
 
 
-
 <p align="justify">
-
 ListenIt 프로젝트를 통해 풀스택 개발의 흐름을 직접 주도하며<br>
-
 React 프론트엔드와 Spring Boot 백엔드 간의 완전한 통신 구조를 설계하고 보안/검색/계정관리까지 전반적인 기능을 안정적으로 구현했습니다.<br><br>
-
 특히 OAuth2 로그인, JWT 인증, Solr 검색 엔진 연동, 이메일 기반 비밀번호 찾기 등의 실무 중심 기술을 직접 다뤄보며<br>
-
 서비스 기획력과 시스템 설계 능력을 동시에 성장시킬 수 있었습니다.
-
 </p>
-
-
-
 ---
-
-
-
 ## 📸 주요 화면 
-
-
-
 <table>
-
 <tr>
-
 <td align="center">
-
 <strong>🔐 로그인 / 계정 잠금</strong><br>
-
 <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="400">
-
 </td>
-
 <td align="center">
-
 <strong>🎶 음악 상세 / 플레이리스트 추가</strong><br>
-
 <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%8C%EC%95%85%EC%83%81%EC%84%B8.jpg" width="400">
-
 </td>
-
 <td align="center">
-
 <strong>📩 Solr 검색 화면</strong><br>
-
 <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%80%EC%83%89.png" width="400">
-
 </td>
-
 </tr>
-
 <tr>
-
 <td align="center">
-
 <strong>🎨 메인 페이지</strong><br>
-
 <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A6%AC%EC%95%A1%ED%8A%B8%EC%97%B0%EB%8F%99%EB%90%9C%ED%99%94%EB%A9%B4.png" width="400">
-
 </td>
-
 <td align="center">
-
 <strong>🗣 커뮤니티 게시판</strong><br>
-
 <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%8C%EC%8B%9C%ED%8C%90.png" width="400">
-
 </td>
-
 <td align="center">
-
 <strong>📩 비밀번호 재설정 이메일</strong><br>
-
 <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%B4%EB%A9%94%EC%9D%BC.png" width="400">
-
 </td>
-
 </tr>
-
 </table>
-
 ---
 
 
 
 <p align="center">
-
   ⓒ 2025 ListenIt Project by <strong>박 성 훈</strong> &nbsp;|&nbsp; Powered by Java ☕ + Spring 🌿 + React ⚛️<br>
-
   <em>“당신의 음악, 당신의 방식으로.”</em>
-
 </p>
-
-자 내원본 보이지?
-
-여기서너가 지금 봐야할게
-
-## 1. 사용자 인증 및 계정 관리: 안전하고 편리한 음악 여정의 시작<p align="center">
-
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="500">
-
-<br>
-
-<em>(이미지 설명: 폼 로그인, 소셜 로그인 버튼 및 계정 잠금 경고 화면)</em></p>**기능 설명:**
-
-
-
-ListenIt은 사용자에게 익숙한 **아이디/비밀번호 기반의 폼 로그인**과 함께 **Google, Kakao, Naver 소셜 로그인**을 모두 통합하여 편리한 인증 경험을 제공합니다. 특히, 무단 접근 시도를 방지하기 위해 **비밀번호 5회 실패 시 자동으로 계정이 잠기는 보안 기능**을 구현하여 사용자 계정의 안전성을 최우선으로 고려했습니다. 로그인 성공 시에는 **JWT 토큰 기반 인증**을 통해 서버 부담을 줄이고 서비스의 확장성을 확보합니다.#### **[핵심 코드: JWT 토큰 발행 및 계정 보안 처리]**backend/src/main/java/com/boot/oauth2/CustomFormSuccessHandler.java
-java
-
-// Spring Security의 AuthenticationSuccessHandler를 구현하여 로그인 성공 후 처리
-
-@Override
-
-public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
-// 🌟 1. 인증된 사용자 정보 기반 JWT Access Token 및 Refresh Token 생성
-
-String accessToken = jwtTokenProvider.createAccessToken(authentication.getName(), authentication.getAuthorities());
-
-String refreshToken = jwtTokenProvider.createRefreshToken(authentication.getName());
-
-
-
-// 🌟 2. Refresh Token을 HttpOnly 쿠키에 담아 XSS 공격으로부터 보호
-
-Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
-
-refreshTokenCookie.setHttpOnly(true); // JavaScript 접근 방지
-
-refreshTokenCookie.setPath("/");
-
-refreshTokenCookie.setMaxAge((int) (jwtTokenProvider.getRefreshTokenExpiration() / 1000));
-
-response.addCookie(refreshTokenCookie);
-
-
-
-// 🌟 3. 로그인 성공 시 계정 잠금 해제 및 실패 횟수 초기화 (보안 강화 로직)
-
-userService.handleSuccessfulLogin(authentication.getName()); // 사용자 계정 상태 업데이트
-
-
-
-// 🌟 4. Access Token 및 성공 메시지를 JSON 형태로 클라이언트에 전송 (React에서 처리)
-
-response.setContentType("application/json;charset=UTF-8");
-
-response.setStatus(HttpServletResponse.SC_OK);
-
-PrintWriter writer = response.getWriter();
-
-writer.write(String.format("{\"message\": \"로그인 성공\", \"accessToken\": \"%s\"}", accessToken));
-
-writer.flush();
-}
