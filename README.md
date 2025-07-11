@@ -164,33 +164,32 @@ React 프론트엔드와 Spring Boot 백엔드 간의 완전한 통신 구조를
 <tr>
 <td align="center">
 <strong>🔐 로그인 / 계정 잠금</strong><br>
-<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/login_lock.png?raw=true" width="400">
+<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="400">
 </td>
 <td align="center">
 <strong>🎶 음악 상세 / 플레이리스트 추가</strong><br>
-<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/music_detail.png?raw=true" width="400">
+<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%8C%EC%95%85%EC%83%81%EC%84%B8.jpg" width="400">
 </td>
-  <td align="center">
-<strong>📩 solr 검색 화면</strong><br>
-<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/검색raw=true" width="400">
+<td align="center">
+<strong>📩 Solr 검색 화면</strong><br>
+<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%80%EC%83%89.png" width="400">
 </td>
 </tr>
 <tr>
 <td align="center">
 <strong>🎨 메인 페이지</strong><br>
-<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/main_page.png?raw=true" width="400">
+<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A6%AC%EC%95%A1%ED%8A%B8%EC%97%B0%EB%8F%99%EB%90%9C%ED%99%94%EB%A9%B4.png" width="400">
 </td>
 <td align="center">
 <strong>🗣 커뮤니티 게시판</strong><br>
-<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/board_page.png?raw=true" width="400">
+<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/board_page.png" width="400">
 </td>
 <td align="center">
 <strong>📩 비밀번호 재설정 이메일</strong><br>
-<img src="https://github.com/bsh-ui/project/blob/Listenlt/images/password_reset_email.png?raw=true" width="400">
+<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%B4%EB%A9%94%EC%9D%BC.png" width="400">
 </td>
 </tr>
 </table>
-
 ---
 
 <p align="center">
