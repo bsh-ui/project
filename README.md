@@ -308,7 +308,74 @@ Solr 연동 및 고성능 검색: Apache Solr 기반 초고속 검색: 방대한
 관계형 데이터베이스만으로는 방대한 음악 데이터에 대한 전문 검색(Full-Text Search) 및 실시간 검색 성능에 한계가 있었습니다. 이 문제를 해결하기 위해 Apache Solr를 직접 서버에 설치하고, 데이터베이스의 음악 정보를 Solr에 실시간으로 색인(indexing)하는 시스템을 구축했습니다. 음악 제목, 아티스트, 가사, 앨범 등 여러 필드에서 동시에 검색이 가능하도록 Solr의 `edismax` 파서와 필드 가중치(`qf`)를 설정하여 사용자에게 가장 관련성 높은 검색 결과를 제공하도록 최적화했습니다. Solr의 유연한 스키마와 코어 관리를 통해, 향후 사용자 플레이리스트 검색, 아티스트 정보 검색 등으로 기능을 확장할 수 있는 기반을 마련했습니다.
 
 ---
+7. Spring Security 설정 및 보안 아키텍처: 서비스의 견고한 심장
+기능 설명:
 
+ListenIt 서비스의 핵심 보안을 담당하는 Spring Security 설정(SecurityConfig.java)을 통해 견고한 인증 및 인가 아키텍처를 구축했습니다. 폼 로그인, OAuth2 소셜 로그인, JWT 토큰 기반 인증 등 다양한 인증 방식을 유기적으로 통합하고, Stateless 세션 관리, URL 기반 접근 제어, 그리고 고급 보안 헤더 설정을 통해 서비스의 확장성과 안전성을 동시에 확보했습니다.
+
+▼ Spring Security 설정 핵심 코드 (SecurityConfig.java)
+
+Java
+
+// Spring Security 설정 클래스의 핵심 부분
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    // ... (필드 주입) ...
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+        MvcRequestMatcher.Builder mvc = new MvcRequestMatcher.Builder(introspector);
+
+        http
+            .cors(cors -> {}) // CORS 허용
+            .csrf(AbstractHttpConfigurer::disable) // JWT 사용으로 CSRF 비활성화
+            .httpBasic(AbstractHttpConfigurer::disable) // HTTP 기본 인증 비활성화
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 🌟 JWT 기반 Stateless 세션
+            .authorizeHttpRequests(authz -> authz // 🌟 URL 기반 접근 제어
+                .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/notices")).hasRole("ADMIN") // ADMIN 전용
+                .requestMatchers(mvc.pattern("/mypage")).authenticated() // 인증된 사용자
+                .requestMatchers(mvc.pattern("/api/auth/signup"), mvc.pattern("/api/login")).permitAll() // 공개 접근
+                .anyRequest().authenticated() // 그 외 모든 요청 인증 필요
+            )
+            .formLogin(form -> form // 🌟 폼 로그인 설정
+                .loginPage("/custom_login")
+                .loginProcessingUrl("/api/login")
+                .successHandler(customFormSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
+            )
+            .oauth2Login(oauth2 -> oauth2 // 🌟 OAuth2 로그인 설정
+                .loginPage("/custom_login")
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .successHandler(customOAuth2Success)
+            )
+            .logout(logout -> logout // 로그아웃 설정
+                .logoutUrl("/log_out")
+                .logoutSuccessHandler(customLogoutSuccessHandler)
+                .deleteCookies("jwt_token", "refresh_token")
+            )
+            .headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives(
+                "default-src 'self' http://localhost:8485;" // 🌟 CSP (Content Security Policy)
+                // ... (나머지 CSP 설정) ...
+            )))
+            .frameOptions(frameOptions -> frameOptions.deny()) // 클릭재킹 방어
+            .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)); // HSTS
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🌟 JWT 필터 등록
+        return http.build();
+    }
+기능 설명 (상세):
+
+ListenIt의 SecurityConfig는 서비스의 보안 심장부로서, 다양한 사용자 인증 요구사항과 보안 위협에 대응하도록 설계되었습니다. HttpSecurity 설정을 통해 CORS 허용, CSRF 비활성화(JWT 기반이므로), HTTP 기본 인증 비활성화와 같은 기본적인 웹 보안 정책을 설정했습니다. 가장 중요한 것은 SessionCreationPolicy.STATELESS 설정으로, 서버가 클라이언트의 세션 상태를 유지하지 않아 JWT 기반 인증에 최적화된 확장성 높은 아키텍처를 구현했습니다.
+
+URL 기반 접근 제어(authorizeHttpRequests)를 통해 관리자 전용 페이지/API는 ADMIN 역할만 접근 가능하게 하고, 마이페이지와 같은 인증된 사용자 전용 리소스는 authenticated()로 제한하며, 로그인/회원가입/메인 페이지 등은 permitAll()로 공개하여 세밀한 권한 관리를 수행합니다.
+
+또한, 폼 로그인, OAuth2 소셜 로그인, JWT 인증 필터(JwtAuthenticationFilter)를 유기적으로 통합하여 사용자가 어떤 방식으로 로그인하든 동일한 보안 정책이 적용되도록 했습니다. CustomAuthenticationSuccessHandler를 통해 로그인 성공 후 JWT 토큰 발행 및 계정 상태 초기화 등의 커스텀 로직을 실행합니다. 마지막으로, Content Security Policy (CSP)를 포함한 여러 보안 헤더 설정은 XSS, 클릭재킹 등 최신 웹 취약점으로부터 서비스를 보호하는 강력한 방어 메커니즘을 제공합니다.
+
+---
 ## 👨‍💻 나의 역할
 
 
