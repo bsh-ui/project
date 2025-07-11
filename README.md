@@ -156,14 +156,7 @@ java
 public void createNotice(Notice notice) {
     noticeRepository.save(notice);
 }
-8. 개발 편의 기능
-테스트용 자동 로그인 계정 제공
-로그인 및 음악 재생 활동 로그 저장 및 조회
-java
-public void saveActivityLog(Long userId, String action) {
-    ActivityLog log = new ActivityLog(userId, action, LocalDateTime.now());
-    activityLogRepository.save(log);
-}
+
 📢 프로젝트 회고
 ListenIt 프로젝트를 통해 React와 Spring Boot의 완전한 통신 구조 설계, 보안 강화, 검색 엔진 연동 등 실무 중심 기술을 직접 구현하며<br>
 서비스 기획력과 시스템 설계 능력을 크게 향상시킬 수 있었습니다.
