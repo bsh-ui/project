@@ -60,7 +60,7 @@ React 프론트엔드와 Spring Boot 백엔드를 RESTful API로 유기적으로
   <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="450" alt="로그인 화면" />
 </p>
 
-```java
+ava
 @Override
 public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
     String accessToken = jwtTokenProvider.createAccessToken(authentication.getName(), authentication.getAuthorities());
