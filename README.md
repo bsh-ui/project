@@ -1,15 +1,16 @@
 <h1 align="center" style="font-size: 3em;">🎵 ListenIt MAGAZINE</h1>
-<h3 align="center"><em>Vol.1 - The Sound of Tomorrow</em></h3>
+<h3 align="center"><em>Vol.1 - The Sound of Tomorrow: 당신의 음악, 당신의 방식으로.</em></h3>
 
 <p align="center">
-  <img src="https://github.com/bsh-ui/project/blob/Listenlt/images/ListenIt%20Cover.png?raw=true" alt="ListenIt Cover" width="300px" height="450px" >
+  <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/ListenIt%20Cover.png" alt="ListenIt Cover" width="300px" height="450px" >
 </p>
 
 <p align="center">
-  <strong>React + Spring Boot 기반 음악 스트리밍 & 검색 플랫폼</strong><br>
+  <strong>💡 개인화된 음악 경험과 견고한 보안을 제공하는 React + Spring Boot 기반 풀스택 음악 플랫폼</strong><br>
   <strong>개발 기간:</strong> 2025.06.02 ~ 2025.06.10 &nbsp;|&nbsp;
   <strong>Repository:</strong> <a href="https://github.com/bsh-ui/project">GitHub 링크</a>
-</p>
+  </p>
+
 
 ---
 
