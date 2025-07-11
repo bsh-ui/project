@@ -5,9 +5,7 @@
 
 
 <p align="center">
-
   <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/ListenIt%20Cover.png" alt="ListenIt Cover" width="300px" height="450px" >
-
 </p>
 
 
