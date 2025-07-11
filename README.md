@@ -11,7 +11,6 @@
   <strong>Repository:</strong> <a href="https://github.com/bsh-ui/project">GitHub 링크</a>
   </p>
 
-
 ---
 
 ## 🌟 Quick Summary for Reviewers (📌 핵심 요약)
@@ -28,7 +27,7 @@
 
 ---
 
-## 💡 프로젝트 개요
+## 💡 프로젝트 개요: 음악 서비스에 대한 풀스택 구현과정에서 얻은 학습 경험
 
 <p align="justify">
 ListenIt 프로젝트는 6개월간의 개발 교육 과정 중, **음악 스트리밍 서비스에 대한 흥미와 '직접 구현해 볼 수 있을까?' 하는 궁금증**에서 시작되었습니다. 평소 즐겨 사용하던 '지니 뮤직'과 같은 플랫폼을 접하며, **서비스를 직접 설계하고 구현해보고자 하는 목표**를 세웠습니다.<br><br>
@@ -39,7 +38,6 @@ ListenIt 프로젝트는 6개월간의 개발 교육 과정 중, **음악 스트
 
 ListenIt은 **비교적 짧은 기간 안에 개인이 주도적으로 기획하고 구현한 풀스택 프로젝트**입니다. 이 과정을 통해 저는 **새로운 기술을 학습하고 실제 프로젝트에 적용하는 주도성, 그리고 문제 해결을 위해 끊임없이 고민하고 시도하는 개발자로서의 태도**를 다질 수 있었습니다.
 </p>
-
 
 ---
 
@@ -79,6 +77,7 @@ ListenIt은 **비교적 짧은 기간 안에 개인이 주도적으로 기획하
 <img src="https://img.shields.io/badge/Ajax-%230078D4.svg" />
 </td>
 </tr>
+</tr>
 <tr>
 <td><strong>🗃 DB & Tools</strong></td>
 <td>
@@ -93,113 +92,47 @@ ListenIt은 **비교적 짧은 기간 안에 개인이 주도적으로 기획하
 
 ---
 
-## 📌 주요 기능 상세
-
-### 🔗 React-Spring 연동 및 인증
-
-- React ↔ Spring Boot RESTful API 연동
-- JWT 기반 인증 및 토큰 저장
-- 폼 로그인 + OAuth2(Google, Naver, Kakao)
-- 로그인 실패 5회 시 계정 잠금
-- 비밀번호 유효성 검사 및 중복 체크
-
-### 📩 비밀번호 재설정 이메일
-
-- 사용자가 이메일을 통해 비밀번호 재설정 링크 수신
-- 이메일 인증 후 새 비밀번호 입력 가능
-- Spring Mail 기반 구현
-
-### 🎵 음악 콘텐츠 및 재생
-
-- MP3 업로드 + 메타데이터 저장 (제목, 아티스트, 앨범 등)
-- 웹 스트리밍 방식으로 끊김 없는 재생
-- 음악 상세 페이지에서 플레이리스트에 추가 가능
-
-### ⏯ 플레이리스트 기능
-
-- 새 플레이리스트 생성
-- 음악 추가/삭제 및 이름 변경
-- 플레이리스트 상세 보기 지원
-
-### 🔍 Apache Solr 검색 기능
-
-- 음악 제목, 아티스트, 가사, 앨범 이미지까지 검색
-- 색인 자동화 및 고속 Full-text 검색
-
-### 🗣️ 커뮤니티 기능
-
-- 게시판 CRUD, 댓글 기능
-- 좋아요/싫어요, 별점 평가
-
-### 📢 공지사항 기능 (관리자)
-
-- 공지사항 등록/수정/삭제 (관리자 전용)
-
-### 🧪 개발 편의 기능
-
-- 테스트용 자동 로그인 계정 제공
-- 로그인/재생 활동 로그 저장 및 조회
+## 🚀 핵심 구현 기능: 기술적 도전과 해결
 
 ---
 
-## 👨‍💻 나의 역할
-
-- 전체 프로젝트 기획 및 백엔드 설계
-- 사용자 인증 시스템 (JWT, OAuth2) 구축
-- 비밀번호 재설정 이메일 처리 로직 개발
-- 음악 업로드/재생 및 스트리밍 시스템 구현
-- Apache Solr 연동 및 검색 API 구축
-- 플레이리스트 및 커뮤니티 기능 개발
-- GitHub 버전 관리 및 README 문서 작성
-
----
-
-## 💭 프로젝트 회고
-
-<p align="justify">
-ListenIt 프로젝트를 통해 풀스택 개발의 흐름을 직접 주도하며<br>
-React 프론트엔드와 Spring Boot 백엔드 간의 완전한 통신 구조를 설계하고 보안/검색/계정관리까지 전반적인 기능을 안정적으로 구현했습니다.<br><br>
-특히 OAuth2 로그인, JWT 인증, Solr 검색 엔진 연동, 이메일 기반 비밀번호 찾기 등의 실무 중심 기술을 직접 다뤄보며<br>
-서비스 기획력과 시스템 설계 능력을 동시에 성장시킬 수 있었습니다.
-</p>
-
----
-
-## 📸 주요 화면 
-
-<table>
-<tr>
-<td align="center">
-<strong>🔐 로그인 / 계정 잠금</strong><br>
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="400">
-</td>
-<td align="center">
-<strong>🎶 음악 상세 / 플레이리스트 추가</strong><br>
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%8C%EC%95%85%EC%83%81%EC%84%B8.jpg" width="400">
-</td>
-<td align="center">
-<strong>📩 Solr 검색 화면</strong><br>
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%80%EC%83%89.png" width="400">
-</td>
-</tr>
-<tr>
-<td align="center">
-<strong>🎨 메인 페이지</strong><br>
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A6%AC%EC%95%A1%ED%8A%B8%EC%97%B0%EB%8F%99%EB%90%9C%ED%99%94%EB%A9%B4.png" width="400">
-</td>
-<td align="center">
-<strong>🗣 커뮤니티 게시판</strong><br>
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%8C%EC%8B%9C%ED%8C%90.png" width="400">
-</td>
-<td align="center">
-<strong>📩 비밀번호 재설정 이메일</strong><br>
-<img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%B4%EB%A9%94%EC%9D%BC.png" width="400">
-</td>
-</tr>
-</table>
----
+### 1. 사용자 인증 및 계정 관리: 안전하고 편리한 음악 여정의 시작
 
 <p align="center">
-  ⓒ 2025 ListenIt Project by <strong>박 성 훈</strong> &nbsp;|&nbsp; Powered by Java ☕ + Spring 🌿 + React ⚛️<br>
-  <em>“당신의 음악, 당신의 방식으로.”</em>
+  <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EB%A1%9C%EA%B7%B8%EC%9D%B8.png" width="500">
+  <br>
+  <em>(이미지 설명: 폼 로그인, 소셜 로그인 버튼 및 계정 잠금 경고 화면)</em>
 </p>
+
+**기능 설명:**
+
+ListenIt은 사용자에게 익숙한 **아이디/비밀번호 기반의 폼 로그인**과 함께 **Google, Kakao, Naver 소셜 로그인**을 모두 통합하여 편리한 인증 경험을 제공합니다. 특히, 무단 접근 시도를 방지하기 위해 **비밀번호 5회 실패 시 자동으로 계정이 잠기는 보안 기능**을 구현하여 사용자 계정의 안전성을 최우선으로 고려했습니다. 로그인 성공 시에는 **JWT 토큰 기반 인증**을 통해 서버 부담을 줄이고 서비스의 확장성을 확보합니다.
+
+#### **[핵심 코드: JWT 토큰 발행 및 계정 보안 처리]**
+`backend/src/main/java/com/boot/oauth2/CustomFormSuccessHandler.java`
+
+```java
+// Spring Security의 AuthenticationSuccessHandler를 구현하여 로그인 성공 후 처리
+@Override
+public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    // 🌟 1. 인증된 사용자 정보 기반 JWT Access Token 및 Refresh Token 생성
+    String accessToken = jwtTokenProvider.createAccessToken(authentication.getName(), authentication.getAuthorities());
+    String refreshToken = jwtTokenProvider.createRefreshToken(authentication.getName());
+
+    // 🌟 2. Refresh Token을 HttpOnly 쿠키에 담아 XSS 공격으로부터 보호
+    Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+    refreshTokenCookie.setHttpOnly(true); // JavaScript 접근 방지
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge((int) (jwtTokenProvider.getRefreshTokenExpiration() / 1000));
+    response.addCookie(refreshTokenCookie);
+
+    // 🌟 3. 로그인 성공 시 계정 잠금 해제 및 실패 횟수 초기화 (보안 강화 로직)
+    userService.handleSuccessfulLogin(authentication.getName()); // 사용자 계정 상태 업데이트
+
+    // 🌟 4. Access Token 및 성공 메시지를 JSON 형태로 클라이언트에 전송 (React에서 처리)
+    response.setContentType("application/json;charset=UTF-8");
+    response.setStatus(HttpServletResponse.SC_OK);
+    PrintWriter writer = response.getWriter();
+    writer.write(String.format("{\"message\": \"로그인 성공\", \"accessToken\": \"%s\"}", accessToken));
+    writer.flush();
+}
