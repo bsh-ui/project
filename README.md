@@ -84,8 +84,8 @@ Spring Mail 활용, 인증 코드의 무작위성과 일회성 보장
 
 <p align="center"> <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%B4%EB%A9%94%EC%9D%BC.png" width="400" alt="비밀번호 재설정 이메일" /> </p>
 java
-복사
-편집
+ 
+ 
 public void sendPasswordResetEmail(String email) {
     String code = generateRandomCode();
     emailService.send(email, "비밀번호 재설정 코드", "코드: " + code);
@@ -100,8 +100,8 @@ MP3 파일 업로드 및 메타데이터(제목, 아티스트, 앨범 등) 저�
 
 <p align="center"> <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%8C%EC%95%85%EC%83%81%EC%84%B8.jpg" width="450" alt="음악 상세 및 재생" /> </p>
 java
-복사
-편집
+ 
+ 
 @Transactional
 public MusicDTO uploadMusic(MultipartFile file, String title, String artist, Long uploaderId) {
     String filePath = fileStorageService.store(file);
@@ -116,8 +116,8 @@ public MusicDTO uploadMusic(MultipartFile file, String title, String artist, Lon
 
 <p align="center"> <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EC%9D%8C%EC%95%85%EC%83%81%EC%84%B8.jpg" width="450" alt="플레이리스트 관리" /> </p>
 java
-복사
-편집
+ 
+ 
 public Playlist createPlaylist(Long userId, String name) {
     Playlist playlist = new Playlist(userId, name);
     playlistRepository.save(playlist);
@@ -130,8 +130,8 @@ public Playlist createPlaylist(Long userId, String name) {
 
 <p align="center"> <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%80%EC%83%89.png" width="450" alt="검색 화면" /> </p>
 java
-복사
-편집
+ 
+ 
 public List<Music> searchMusic(String query) {
     SolrQuery solrQuery = new SolrQuery();
     solrQuery.setQuery(query);
@@ -145,8 +145,8 @@ public List<Music> searchMusic(String query) {
 
 <p align="center"> <img src="https://raw.githubusercontent.com/bsh-ui/project/Listenlt/images/%EA%B2%8C%EC%8B%9C%ED%8C%90.png" width="450" alt="커뮤니티 화면" /> </p>
 java
-복사
-편집
+ 
+ 
 public void addComment(Long postId, Comment comment) {
     comment.setPostId(postId);
     commentRepository.save(comment);
@@ -155,8 +155,8 @@ public void addComment(Long postId, Comment comment) {
 관리자 권한으로 공지사항 등록, 수정, 삭제 가능
 
 java
-복사
-편집
+ 
+ 
 @PreAuthorize("hasRole('ADMIN')")
 public void createNotice(Notice notice) {
     noticeRepository.save(notice);
@@ -167,8 +167,8 @@ public void createNotice(Notice notice) {
 로그인 및 음악 재생 활동 로그 저장 및 조회
 
 java
-복사
-편집
+ 
+ 
 public void saveActivityLog(Long userId, String action) {
     ActivityLog log = new ActivityLog(userId, action, LocalDateTime.now());
     activityLogRepository.save(log);
